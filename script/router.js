@@ -55,7 +55,6 @@ class Router {
   }
 
   handle404() {
-    console.warn(`Route not found: ${this.currentPath}, redirecting to home`);
     this.navigate('/', { replace: true });
   }
 

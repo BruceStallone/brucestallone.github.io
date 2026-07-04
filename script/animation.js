@@ -597,7 +597,6 @@ class DissolveAnimationManager {
     const brandElements = document.querySelectorAll('.brand-cn, .brand-en');
     
     if (brandElements.length === 0) {
-      console.warn('[DissolveAnimation] 未找到品牌文字元素');
       return;
     }
 
@@ -617,7 +616,6 @@ class DissolveAnimationManager {
         animation.init();
         this.animations.push(animation);
       } catch (error) {
-        console.error('[DissolveAnimation] 初始化失败:', error);
       }
     });
   }
@@ -659,7 +657,6 @@ class DissolveAnimationManager {
     this.animations.forEach(anim => {
       anim.rewrapChars();
     });
-    console.log('[DissolveAnimation] 重新包装字符完成');
   }
 }
 

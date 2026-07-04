@@ -39,7 +39,6 @@ class HeroVideoBackground {
     this.fallback = document.getElementById('hero-video-fallback');
     
     if (!this.video || !this.container) {
-      console.warn('[HeroVideo] 未找到视频容器元素');
       return;
     }
     
@@ -47,7 +46,6 @@ class HeroVideoBackground {
     this.enableVideo = this.config.enableVideo;
     
     if (!this.enableVideo) {
-      console.log('[HeroVideo] enableVideo 设置为 false，使用静态海报背景');
       this.applyPosterOnly();
       this.isInitialized = true;
       return;
@@ -56,7 +54,6 @@ class HeroVideoBackground {
     this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     
     if (this.reducedMotion) {
-      console.log('[HeroVideo] 检测到 prefers-reduced-motion，使用静态背景');
       this.showFallback();
       return;
     }
@@ -66,7 +63,6 @@ class HeroVideoBackground {
     this.startLoading();
     
     this.isInitialized = true;
-    console.log('[HeroVideo] 视频背景初始化完成');
   }
   
   applyPosterOnly() {
@@ -102,7 +98,6 @@ class HeroVideoBackground {
         this.config = { ...this.defaultConfig };
       }
     } catch (error) {
-      console.warn('[HeroVideo] 配置解析失败，使用默认配置:', error);
       this.config = { ...this.defaultConfig };
     }
   }
@@ -156,25 +151,21 @@ class HeroVideoBackground {
     
     this.loadTimeoutId = setTimeout(() => {
       if (this.isLoading) {
-        console.warn('[HeroVideo] 视频加载超时，切换到降级方案');
         this.handleLoadTimeout();
       }
     }, this.config.loadTimeout);
   }
   
   handleLoadedData() {
-    console.log('[HeroVideo] 视频数据已加载');
   }
   
   handleCanPlay() {
-    console.log('[HeroVideo] 视频可以播放');
     this.clearLoadTimeout();
     this.container.classList.remove('video-loading');
     this.isLoading = false;
   }
   
   handlePlaying() {
-    console.log('[HeroVideo] 视频正在播放');
     this.clearLoadTimeout();
     this.container.classList.remove('video-loading');
     this.isLoading = false;
@@ -183,32 +174,9 @@ class HeroVideoBackground {
   
   handleError(e) {
     const error = this.video.error;
-    let errorMessage = '未知错误';
-    
-    if (error) {
-      switch (error.code) {
-        case error.MEDIA_ERR_ABORTED:
-          errorMessage = '视频加载被中止';
-          break;
-        case error.MEDIA_ERR_NETWORK:
-          errorMessage = '网络错误导致视频加载失败';
-          break;
-        case error.MEDIA_ERR_DECODE:
-          errorMessage = '视频解码失败';
-          break;
-        case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-          errorMessage = '视频格式不支持';
-          break;
-        default:
-          errorMessage = `错误代码: ${error.code}`;
-      }
-    }
-    
-    console.error(`[HeroVideo] 视频加载失败: ${errorMessage}`, e);
     
     if (this.retryCount < this.config.retryAttempts) {
       this.retryCount++;
-      console.log(`[HeroVideo] 尝试重新加载 (${this.retryCount}/${this.config.retryAttempts})`);
       setTimeout(() => {
         this.video.load();
       }, 1000);
@@ -220,11 +188,9 @@ class HeroVideoBackground {
   }
   
   handleStalled() {
-    console.warn('[HeroVideo] 视频加载停滞');
   }
   
   handleSuspend() {
-    console.log('[HeroVideo] 视频加载被挂起');
   }
   
   handleLoadTimeout() {
@@ -236,26 +202,20 @@ class HeroVideoBackground {
   }
   
   handleReducedMotion() {
-    console.log('[HeroVideo] 用户偏好减少动画，暂停视频');
     this.video.pause();
     this.showFallback();
   }
   
   handleNormalMotion() {
-    console.log('[HeroVideo] 用户偏好正常动画，恢复视频');
     this.hideFallback();
-    this.video.play().catch(err => {
-      console.warn('[HeroVideo] 恢复播放失败:', err);
-    });
+    this.video.play().catch(() => {});
   }
   
   handleVisibilityChange() {
     if (document.hidden) {
       this.video.pause();
     } else if (!this.reducedMotion && !this.hasError) {
-      this.video.play().catch(err => {
-        console.warn('[HeroVideo] 恢复播放失败:', err);
-      });
+      this.video.play().catch(() => {});
     }
   }
   
@@ -313,8 +273,6 @@ class HeroVideoBackground {
       this.startLoading();
       this.video.load();
     }
-    
-    console.log('[HeroVideo] 配置已更新:', this.config);
   }
   
   play() {
@@ -345,7 +303,6 @@ class HeroVideoBackground {
     }
     
     this.isInitialized = false;
-    console.log('[HeroVideo] 视频背景已销毁');
   }
 }
 

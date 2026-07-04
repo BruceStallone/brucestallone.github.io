@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="图南工作室产品介绍 - 探索我们精心打造的沉浸式游戏世界">
-  <meta name="theme-color" content="#2D3436">
+  <meta name="description" content="图南工作室作品介绍 - 探索我们精心打造的沉浸式游戏世界">
+  <meta name="theme-color" content="#1C1C1E">
   
-  <title>产品介绍 - 图南工作室</title>
+  <title>作品 - 图南工作室</title>
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231C1C1E'/%3E%3Ctext x='16' y='23' font-size='20' font-family='serif' fill='%23C8463C' text-anchor='middle'%3E%E5%9B%BE%3C/text%3E%3C/svg%3E">
+  <link rel="preload" href="../Font/cuan.woff" as="font" type="font/woff" crossorigin>
   
   <link rel="stylesheet" href="../css/styles.css">
   
@@ -20,12 +19,12 @@
   <a href="#main-content" class="skip-link">跳转到主要内容</a>
   
   <header class="navbar" role="banner">
-    <nav class="navbar-container" role="navigation" aria-label="主导航">     
+    <nav class="navbar-container" role="navigation" aria-label="主导航">
       <ul class="navbar-nav">
         <li><a href="/" class="nav-link" data-nav="home" data-i18n="nav.home">首页</a></li>
-        <li><a href="/products" class="nav-link" data-nav="products" data-i18n="nav.products">产品介绍</a></li>
-        <li><a href="/team" class="nav-link" data-nav="team" data-i18n="nav.team">团队介绍</a></li>
-        <li><a href="/social" class="nav-link" data-nav="social" data-i18n="nav.social">联系我们</a></li>
+        <li><a href="/products" class="nav-link active" data-nav="products" data-i18n="nav.products">作品</a></li>
+        <li><a href="/team" class="nav-link" data-nav="team" data-i18n="nav.team">关于我们</a></li>
+        <li><a href="/social" class="nav-link" data-nav="social" data-i18n="nav.social">关注我们</a></li>
       </ul>
       
       <div class="navbar-actions">
@@ -41,10 +40,14 @@
     </nav>
     
     <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+      <button class="mobile-menu-close" aria-label="关闭菜单">
+        <span class="close-icon"></span>
+      </button>
       <ul class="mobile-nav">
-        <li><a href="/products" class="mobile-nav-link" data-nav="products" data-i18n="nav.products">产品介绍</a></li>
-        <li><a href="/team" class="mobile-nav-link" data-nav="team" data-i18n="nav.team">团队介绍</a></li>
-        <li><a href="/social" class="mobile-nav-link" data-nav="social" data-i18n="nav.social">联系我们</a></li>
+        <li><a href="/" class="mobile-nav-link" data-nav="home" data-i18n="nav.home">首页</a></li>
+        <li><a href="/products" class="mobile-nav-link active" data-nav="products" data-i18n="nav.products">作品</a></li>
+        <li><a href="/team" class="mobile-nav-link" data-nav="team" data-i18n="nav.team">关于我们</a></li>
+        <li><a href="/social" class="mobile-nav-link" data-nav="social" data-i18n="nav.social">关注我们</a></li>
       </ul>
       <div class="mobile-lang-switcher">
         <button class="lang-btn active" data-lang="zh-CN">中文</button>
@@ -78,6 +81,7 @@
                 <span class="tag">2D</span>
                 <span class="tag">角色扮演</span>
                 <span class="tag">解谜</span>
+                <span class="tag">Steam</span>
               </div>
             </div>
           </article>
@@ -100,21 +104,30 @@
                 <span class="tag">2D</span>
                 <span class="tag">剧情</span>
                 <span class="tag">视觉小说</span>
+                <span class="tag">Steam</span>
               </div>
             </div>
           </article>
           
-          <article class="product-card" data-animate data-has-hover="false">
+          <article class="product-card" data-animate data-has-hover="true">
             <div class="product-image">
-              <picture>
-                <source srcset="../img/hero/product-3@3x.webp 3x, ../img/hero/product-3@2x.webp 2x, ../img/hero/product-3.webp" type="image/webp">
-                <img src="../img/hero/product-3.jpg" alt="游戏截图" loading="lazy">
-              </picture>
+              <a href="https://store.steampowered.com/app/4553080" data-image-link="https://store.steampowered.com/app/4553080" target="_blank" rel="noopener noreferrer" aria-label="查看甲马牌详情">
+                <picture>
+                  <source srcset="../img/hero/product-3@3x.webp 3x, ../img/hero/product-3@2x.webp 2x, ../img/hero/product-3.webp" type="image/webp">
+                  <source srcset="../img/hero/product-3@3x.jpg 3x, ../img/hero/product-3@2x.jpg 2x, ../img/hero/product-3.jpg" type="image/jpeg">
+                  <img class="product-img-default" src="../img/hero/product-3.jpg" alt="甲马牌游戏截图" loading="lazy">
+                  <img class="product-img-hover" src="../img/hero/product-3-hover.webp" alt="甲马牌游戏截图" loading="lazy">
+                </picture>
+              </a>
             </div>
             <div class="product-info">
-              <h2 class="product-title"></h2>
-              <p class="product-description"></p>
+              <h2 class="product-title">甲马牌</h2>
+              <p class="product-description">2D卡牌肉鸽策略游戏</p>
               <div class="product-tags">
+                <span class="tag">2D</span>
+                <span class="tag">卡牌</span>
+                <span class="tag">肉鸽</span>
+                <span class="tag">Steam</span>
               </div>
             </div>
           </article>
@@ -233,7 +246,7 @@
 
   <footer class="footer" role="contentinfo">
     <div class="container">
-      <p class="footer-copyright" data-i18n="footer.copyright">© 2024 图南工作室 TunanStudio. All rights reserved.</p>
+      <p class="footer-copyright" data-i18n="footer.copyright">© 2024-2026 图南工作室 TunanStudio. All rights reserved.</p>
       <nav class="footer-nav" aria-label="底部导航">
         <a href="#" class="footer-link" data-i18n="footer.privacy">隐私政策</a>
         <a href="#" class="footer-link" data-i18n="footer.terms">服务条款</a>

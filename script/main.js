@@ -18,7 +18,6 @@ class App {
     await window.i18n.init();
     this.initRouter();
     this.initLanguageSwitcher();
-    this.initLogoUpload();
     this.initFloatingImages();
     this.initHeroVideo();
     window.heroAnimations.init();
@@ -126,10 +125,11 @@ class App {
   }
 
   initMobileMenu() {
-    const menuToggle = document.getElementById('mobile-menu-btn');
+    const menuToggles = document.querySelectorAll('.mobile-menu-toggle');
+    const closeButtons = document.querySelectorAll('.mobile-menu-close');
     const mobileMenu = document.getElementById('mobile-menu');
     
-    if (!menuToggle || !mobileMenu) return;
+    if (!mobileMenu) return;
 
     if (this._menuController) {
       this._menuController.abort();
@@ -137,11 +137,24 @@ class App {
     this._menuController = new AbortController();
     const { signal } = this._menuController;
 
+    menuToggles.forEach(toggle => {
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleMobileMenuState();
+      }, { signal });
+    });
+
+    closeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.closeMobileMenu();
+      }, { signal });
+    });
+
     const closeMenuOnOutsideClick = (e) => {
       if (mobileMenu.classList.contains('active') &&
           !mobileMenu.contains(e.target) && 
-          !menuToggle.contains(e.target)) {
-        window.toggleMobileMenu();
+          !e.target.closest('.mobile-menu-toggle')) {
+        this.closeMobileMenu();
       }
     };
 
@@ -152,10 +165,20 @@ class App {
       window.router.beforeEach(() => {
         const menu = document.getElementById('mobile-menu');
         if (menu && menu.classList.contains('active')) {
-          window.toggleMobileMenu();
+          this.closeMobileMenu();
         }
       });
       this._routeHookAdded = true;
+    }
+  }
+
+  toggleMobileMenuState() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (!mobileMenu) return;
+    if (mobileMenu.classList.contains('active')) {
+      this.closeMobileMenu();
+    } else {
+      this.openMobileMenu();
     }
   }
 
@@ -170,6 +193,7 @@ class App {
     menuToggle.classList.add('active');
     menuToggle.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('mobile-menu-open');
   }
 
   closeMobileMenu() {
@@ -183,6 +207,7 @@ class App {
     menuToggle.classList.remove('active');
     menuToggle.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
+    document.body.classList.remove('mobile-menu-open');
 
     const mobileDropdowns = mobileMenu.querySelectorAll('.mobile-nav-dropdown');
     mobileDropdowns.forEach(dropdown => {
@@ -203,15 +228,34 @@ class App {
     }
   }
 
+  updateActiveNav(path) {
+    const navMap = {
+      '/': 'home',
+      '/products': 'products',
+      '/product': 'products',
+      '/team': 'team',
+      '/team/intro': 'team',
+      '/social': 'social',
+      '/team/social': 'social'
+    };
+    const activeNav = navMap[path] || 'home';
+
+    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+      const navData = link.dataset.nav;
+      if (navData === activeNav) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
+
   initLanguageSwitcher() {
-    console.log('[App] Initializing language switcher...');
-    
     const handleLanguageClick = async (e) => {
       const btn = e.target.closest('[data-lang]');
       if (!btn) return;
       
       if (window.i18n.isLoading) {
-        console.warn('[App] Language is loading, please wait...');
         return;
       }
       
@@ -219,19 +263,15 @@ class App {
       if (!lang) return;
       
       if (lang === window.i18n.getCurrentLang()) {
-        console.log(`[App] Already on language: ${lang}`);
         return;
       }
       
       this.setLanguageButtonsLoading(true);
       
       try {
-        console.log(`[App] Switching to: ${lang}`);
         await window.i18n.switchLanguage(lang);
         this.updateLanguageButtons();
-        console.log(`[App] Language switched to ${lang}`);
       } catch (error) {
-        console.error(`[App] Failed to switch language:`, error);
         this.showToast('语言切换失败，请重试', 'error');
       } finally {
         this.setLanguageButtonsLoading(false);
@@ -253,7 +293,6 @@ class App {
     });
 
     this.updateLanguageButtons();
-    console.log('[App] Language switcher initialized');
   }
 
   setLanguageButtonsLoading(loading) {
@@ -497,57 +536,6 @@ class App {
     return placeholders[platform] || platform.charAt(0).toUpperCase();
   }
 
-  initLogoUpload() {
-    const brandLink = document.getElementById('navbar-brand');
-    const logoInput = document.getElementById('logo-upload');
-    const logoImg = document.getElementById('brand-logo-img');
-    const brandMark = document.getElementById('brand-mark-default');
-    
-    if (!brandLink || !logoInput) return;
-    
-    const savedLogo = localStorage.getItem('tunan-custom-logo');
-    if (savedLogo) {
-      this.displayCustomLogo(savedLogo, logoImg, brandMark);
-    }
-    
-    const handleLogoUpload = (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      
-      if (file.size > 8 * 1024 * 1024) {
-        alert('文件过大，请上传小于8MB的图片');
-        logoInput.value = '';
-        return;
-      }
-      
-      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-      if (!validTypes.includes(file.type)) {
-        alert('仅支持 JPG、PNG、WebP 格式的图片');
-        logoInput.value = '';
-        return;
-      }
-      
-      this.compressImage(file, (compressedDataUrl) => {
-        localStorage.setItem('tunan-custom-logo', compressedDataUrl);
-        this.displayCustomLogo(compressedDataUrl, logoImg, brandMark);
-      });
-    };
-    
-    logoInput.addEventListener('change', handleLogoUpload);
-    
-    brandLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      logoInput.click();
-    });
-    
-    brandLink.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        logoInput.click();
-      }
-    });
-  }
-
   initFloatingImages() {
     const container = document.getElementById('floating-images-container');
     if (!container) return;
@@ -560,7 +548,6 @@ class App {
         window.floatingImagesInstance = null;
       }
       container.innerHTML = '';
-      console.log('[App] floating image 已禁用，不进行初始化');
       return;
     }
 
@@ -591,7 +578,7 @@ class App {
       imageSize: 100,
       textSafeMargin: 30,
       maxOverlapRatio: 0.15,
-      debugMode: true,
+      debugMode: false,
       storageKey: 'tunan-floating-images',
       enableRotation: enableRotation
     };
@@ -612,7 +599,6 @@ class App {
         return stored === 'true';
       }
     } catch (e) {
-      console.warn('[App] 读取floatingImageRotationEnabled配置失败:', e);
     }
     return false;
   }
@@ -620,9 +606,7 @@ class App {
   setFloatingImageRotationConfig(enabled) {
     try {
       localStorage.setItem('floatingImageRotationEnabled', enabled ? 'true' : 'false');
-      console.log(`[App] floatingImageRotationEnabled 已设置为: ${enabled}`);
     } catch (e) {
-      console.warn('[App] 设置floatingImageRotationEnabled配置失败:', e);
     }
   }
 
@@ -631,49 +615,6 @@ class App {
     this.setFloatingImageRotationConfig(!current);
     this.initFloatingImages();
     return !current;
-  }
-
-  compressImage(file, callback) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        let width = img.width;
-        let height = img.height;
-        const maxSize = 200;
-        
-        if (width > height && width > maxSize) {
-          height = (height * maxSize) / width;
-          width = maxSize;
-        } else if (height > maxSize) {
-          width = (width * maxSize) / height;
-          height = maxSize;
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        canvas.toBlob((blob) => {
-          const reader = new FileReader();
-          reader.onload = () => callback(reader.result);
-          reader.readAsDataURL(blob);
-        }, 'image/jpeg', 0.8);
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  displayCustomLogo(dataUrl, logoImg, brandMark) {
-    if (logoImg && brandMark) {
-      logoImg.src = dataUrl;
-      logoImg.style.display = 'block';
-      brandMark.style.display = 'none';
-    }
   }
 
   navigateTo(target) {
@@ -712,6 +653,7 @@ class App {
     }
 
     this.initNavigation();
+    this.updateActiveNav(path);
     this.initFloatingImages();
     this.initHeroVideo();
     window.heroAnimations.init();
@@ -818,9 +760,6 @@ class App {
           <p class="brand-tagline" data-i18n="brand.tagline">${window.i18n.get('brand.tagline')}</p>
           <div class="hero-actions">
           </div>
-        </div>
-        <div class="hero-scroll-indicator" aria-hidden="true">
-          <span class="scroll-line"></span>
         </div>
       </section>
     `;
@@ -1140,32 +1079,8 @@ document.addEventListener('DOMContentLoaded', () => {
   window.getFloatingImageRotation = () => app.getFloatingImageRotationConfig();
   
   window.toggleMobileMenu = function() {
-    const menuBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    
-    console.log('[toggleMobileMenu] Button:', menuBtn);
-    console.log('[toggleMobileMenu] Menu:', mobileMenu);
-    
-    if (!menuBtn || !mobileMenu) {
-      console.error('[toggleMobileMenu] Elements not found!');
-      return;
-    }
-    
-    const isActive = mobileMenu.classList.contains('active');
-    console.log('[toggleMobileMenu] isActive:', isActive);
-    
-    if (isActive) {
-      mobileMenu.classList.remove('active');
-      mobileMenu.setAttribute('aria-hidden', 'true');
-      menuBtn.classList.remove('active');
-      menuBtn.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-    } else {
-      mobileMenu.classList.add('active');
-      mobileMenu.setAttribute('aria-hidden', 'false');
-      menuBtn.classList.add('active');
-      menuBtn.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
+    if (window.appInstance) {
+      window.appInstance.toggleMobileMenuState();
     }
   };
   

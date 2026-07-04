@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="图南工作室 - 用游戏讲述故事">
-  <meta name="theme-color" content="#2D3436">
+  <meta name="description" content="图南工作室 TunanStudio - 探索叙事的无限可能，深耕中国传统民俗与云南少数民族文化">
+  <meta name="theme-color" content="#1C1C1E">
   
   <title>图南工作室 TunanStudio</title>
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231C1C1E'/%3E%3Ctext x='16' y='23' font-size='20' font-family='serif' fill='%23C8463C' text-anchor='middle'%3E%E5%9B%BE%3C/text%3E%3C/svg%3E">
+  <link rel="preload" href="Font/cuan.woff" as="font" type="font/woff" crossorigin>
   
   <link rel="stylesheet" href="css/styles.css">
   
@@ -22,15 +21,10 @@
   <header class="navbar" role="banner">
     <nav class="navbar-container" role="navigation" aria-label="主导航">
       <ul class="navbar-nav">
-        <li><a href="/" class="nav-link" data-nav="home" data-i18n="nav.home">首页</a></li>
-        <li><a href="/products" class="nav-link" data-nav="products" data-i18n="nav.products">产品介绍</a></li>
-        <li class="nav-dropdown">
-          <a href="/team" class="nav-link nav-dropdown-toggle" data-nav="team" data-i18n="nav.team" aria-expanded="false" aria-haspopup="true">关于我们</a>
-          <div class="nav-dropdown-menu" role="menu">
-            <a href="/team/intro" class="nav-dropdown-item" data-nav="team-intro" role="menuitem">团队介绍</a>
-            <a href="/team/social" class="nav-dropdown-item" data-nav="team-social" role="menuitem">关注我们</a>
-          </div>
-        </li>
+        <li><a href="/" class="nav-link active" data-nav="home" data-i18n="nav.home">首页</a></li>
+        <li><a href="/products" class="nav-link" data-nav="products" data-i18n="nav.products">作品</a></li>
+        <li><a href="/team" class="nav-link" data-nav="team" data-i18n="nav.team">关于我们</a></li>
+        <li><a href="/social" class="nav-link" data-nav="social" data-i18n="nav.social">关注我们</a></li>
       </ul>
       
       <div class="navbar-actions">
@@ -39,26 +33,21 @@
           <button class="lang-btn" data-lang="en" aria-label="Switch to English" aria-pressed="false">English</button>
         </div>
         
-        <button class="mobile-menu-toggle" id="mobile-menu-btn" aria-label="打开菜单" aria-expanded="false" aria-controls="mobile-menu" onclick="toggleMobileMenu()">
+        <button class="mobile-menu-toggle" id="mobile-menu-btn" aria-label="打开菜单" aria-expanded="false" aria-controls="mobile-menu">
           <span class="menu-icon"></span>
         </button>
       </div>
     </nav>
     
     <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
-      <button class="mobile-menu-close" onclick="toggleMobileMenu()" aria-label="关闭菜单">
+      <button class="mobile-menu-close" aria-label="关闭菜单">
         <span class="close-icon"></span>
       </button>
       <ul class="mobile-nav">
-        <li><a href="/" class="mobile-nav-link" data-nav="home" data-i18n="nav.home">首页</a></li>
-        <li><a href="/products" class="mobile-nav-link" data-nav="products" data-i18n="nav.products">产品介绍</a></li>
-        <li class="mobile-nav-dropdown">
-          <a href="/team" class="mobile-nav-link mobile-nav-dropdown-toggle" data-nav="team" data-i18n="nav.team" aria-expanded="false">关于我们</a>
-          <div class="mobile-nav-dropdown-menu">
-            <a href="/team/intro" class="mobile-nav-dropdown-item" data-nav="team-intro">团队介绍</a>
-            <a href="/team/social" class="mobile-nav-dropdown-item" data-nav="team-social">关注我们</a>
-          </div>
-        </li>
+        <li><a href="/" class="mobile-nav-link active" data-nav="home" data-i18n="nav.home">首页</a></li>
+        <li><a href="/products" class="mobile-nav-link" data-nav="products" data-i18n="nav.products">作品</a></li>
+        <li><a href="/team" class="mobile-nav-link" data-nav="team" data-i18n="nav.team">关于我们</a></li>
+        <li><a href="/social" class="mobile-nav-link" data-nav="social" data-i18n="nav.social">关注我们</a></li>
       </ul>
       <div class="mobile-lang-switcher">
         <button class="lang-btn active" data-lang="zh-CN">中文</button>
@@ -107,7 +96,7 @@
           <span class="brand-divider">|</span>
           <span class="brand-en" data-i18n="brand.en">TunanStudio</span>
         </h1>
-        <p class="brand-tagline" data-i18n="brand.tagline">用游戏讲述故事</p>
+        <p class="brand-tagline" data-i18n="brand.tagline">探索叙事的无限可能</p>
         
         <div class="hero-actions">
         </div>
@@ -117,7 +106,7 @@
 
   <footer class="footer" role="contentinfo">
     <div class="container">
-      <p class="footer-copyright" data-i18n="footer.copyright">© 2024 图南工作室 TunanStudio. All rights reserved.</p>
+      <p class="footer-copyright" data-i18n="footer.copyright">© 2024-2026 图南工作室 TunanStudio. All rights reserved.</p>
     </div>
   </footer>
 

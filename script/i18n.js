@@ -50,7 +50,6 @@ class I18nEngine {
         try {
           callback(data);
         } catch (error) {
-          console.error(`[i18n] Event listener error for ${event}:`, error);
         }
       });
     }
@@ -58,11 +57,9 @@ class I18nEngine {
 
   async init() {
     if (this._isInitialized) {
-      console.log('[i18n] Already initialized');
       return this;
     }
 
-    console.log('[i18n] Initializing...');
     this._isLoading = true;
 
     try {
@@ -70,11 +67,9 @@ class I18nEngine {
 
       if (savedLang && this.isSupported(savedLang)) {
         this.currentLang = savedLang;
-        console.log(`[i18n] Using saved language: ${savedLang}`);
       } else {
         const browserLang = navigator.language || navigator.languages?.[0];
         this.currentLang = this.detectLanguage(browserLang);
-        console.log(`[i18n] Detected browser language: ${browserLang}, using: ${this.currentLang}`);
       }
 
       await this._loadLanguageFile(this.currentLang);
@@ -83,11 +78,9 @@ class I18nEngine {
       this._isLoading = false;
       
       this.emit(I18nEventType.INITIALIZED, { lang: this.currentLang });
-      console.log('[i18n] Initialization complete');
       
       return this;
     } catch (error) {
-      console.error('[i18n] Initialization failed:', error);
       this._isLoading = false;
       this.translations = {};
       throw error;
@@ -123,7 +116,6 @@ class I18nEngine {
 
   async loadLanguage(lang) {
     if (this._isLoading) {
-      console.warn('[i18n] Already loading, waiting...');
       return this._loadPromise;
     }
 
@@ -144,16 +136,13 @@ class I18nEngine {
 
   async switchLanguage(lang) {
     if (!this.isSupported(lang)) {
-      console.warn(`[i18n] Unsupported language: ${lang}`);
       lang = this.defaultLang;
     }
 
     if (lang === this.currentLang) {
-      console.log(`[i18n] Already on language: ${lang}`);
       return;
     }
 
-    console.log(`[i18n] Switching from ${this.currentLang} to ${lang}`);
     this.emit(I18nEventType.LANGUAGE_BEFORE_SWITCH, { 
       from: this.currentLang, 
       to: lang 
@@ -168,18 +157,15 @@ class I18nEngine {
       try {
         localStorage.setItem('tunan-lang', lang);
       } catch (storageError) {
-        console.warn('[i18n] Could not save to localStorage:', storageError);
       }
       
       this.applyTranslations();
       this._isLoading = false;
       
       this.emit(I18nEventType.LANGUAGE_SWITCHED, { lang });
-      console.log(`[i18n] Switched to ${lang} successfully`);
       
     } catch (error) {
       this._isLoading = false;
-      console.error(`[i18n] Failed to switch to ${lang}:`, error);
       this.emit(I18nEventType.LOAD_ERROR, { lang, error });
       throw error;
     }
@@ -187,7 +173,6 @@ class I18nEngine {
 
   get(key, fallback = null) {
     if (!this.translations || Object.keys(this.translations).length === 0) {
-      console.warn('[i18n] No translations loaded');
       return fallback || key;
     }
 
@@ -207,7 +192,6 @@ class I18nEngine {
 
   applyTranslations() {
     const elements = document.querySelectorAll('[data-i18n]');
-    let appliedCount = 0;
 
     elements.forEach(element => {
       const key = element.getAttribute('data-i18n');
@@ -222,7 +206,6 @@ class I18nEngine {
         } else {
           element.textContent = translation;
         }
-        appliedCount++;
       }
     });
 
@@ -236,8 +219,7 @@ class I18nEngine {
       element.textContent = this.get(key);
     });
 
-    console.log(`[i18n] Applied ${appliedCount} translations`);
-    return appliedCount;
+    return elements.length;
   }
 
   getCurrentLang() {
@@ -252,7 +234,6 @@ class I18nEngine {
     this.listeners.clear();
     this.translations = {};
     this._isInitialized = false;
-    console.log('[i18n] Destroyed');
   }
 }
 

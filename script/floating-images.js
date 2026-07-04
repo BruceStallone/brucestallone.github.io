@@ -44,14 +44,12 @@ class FloatingImages {
   init() {
     this.container = document.querySelector(this.containerSelector);
     if (!this.container) {
-      console.warn('[FloatingImages] 容器不存在');
       return;
     }
 
     this.limitImageCount();
     
     if (!this.validateImages()) {
-      console.warn('[FloatingImages] 图片配置无效');
       return;
     }
 
@@ -60,16 +58,11 @@ class FloatingImages {
     this.createImages();
     this.startAnimation();
     this.loadPositions();
-    
-    if (this.debugMode) {
-      this.logDebugInfo();
-    }
   }
 
   detectTextBounds() {
     const textElement = document.querySelector('.brand-title');
     if (!textElement) {
-      console.log('[FloatingImages] 未找到文字元素，使用默认布局');
       return;
     }
 
@@ -84,13 +77,6 @@ class FloatingImages {
       right: textRect.right - containerRect.left,
       bottom: textRect.bottom - containerRect.top
     };
-
-    console.log('[FloatingImages] 文字区域坐标:', {
-      x: this.textBounds.x,
-      y: this.textBounds.y,
-      width: this.textBounds.width,
-      height: this.textBounds.height
-    });
   }
 
   getTextSafeArea() {
@@ -225,24 +211,6 @@ class FloatingImages {
 
       positions.push(result.position);
       overlapRatios.push(result.overlapRatio);
-
-      if (this.debugMode) {
-        console.log(`[FloatingImages] 图片 ${i + 1}:`, {
-          x: Math.round(result.position.x),
-          y: Math.round(result.position.y),
-          width: imgWidth,
-          height: imgHeight,
-          overlapRatio: (result.overlapRatio * 100).toFixed(1) + '%'
-        });
-      }
-    }
-
-    if (this.debugMode) {
-      console.log('[FloatingImages] 位置生成完成:', {
-        totalImages: count,
-        avgOverlapRatio: (overlapRatios.reduce((a, b) => a + b, 0) / count * 100).toFixed(1) + '%',
-        maxOverlapRatio: (Math.max(...overlapRatios) * 100).toFixed(1) + '%'
-      });
     }
 
     return positions;
@@ -251,14 +219,12 @@ class FloatingImages {
   limitImageCount() {
     const maxImages = 18;
     if (this.images.length > maxImages) {
-      console.warn(`[FloatingImages] 图片数量超过限制 ${maxImages}，将截取前 ${maxImages} 张`);
       this.images = this.images.slice(0, maxImages);
     }
   }
 
   validateImages() {
     if (!Array.isArray(this.images) || this.images.length < 3 || this.images.length > 18) {
-      console.warn('[FloatingImages] 图片数量必须在 3-18 张之间');
       return false;
     }
     return true;
@@ -369,7 +335,6 @@ class FloatingImages {
       } while (this.checkOverlap(position, positions, imgWidth, imgHeight) && attempts < maxAttempts);
 
       if (attempts >= maxAttempts) {
-        console.warn(`[FloatingImages] 为第 ${i + 1} 张图片生成位置时达到最大尝试次数，切换到网格布局`);
         return this.generateGridPositions(containerRect, count, imgWidth, imgHeight);
       }
 
@@ -380,15 +345,6 @@ class FloatingImages {
   }
 
   logDebugInfo() {
-    console.log('='.repeat(50));
-    console.log('[FloatingImages] 调试信息');
-    console.log('='.repeat(50));
-    console.log('文字区域边界:', this.textBounds || '未检测到');
-    console.log('安全边距:', this.textSafeMargin + 'px');
-    console.log('最大重叠率:', (this.maxOverlapRatio * 100) + '%');
-    console.log('图片尺寸:', this.imageSize + 'px');
-    console.log('图片数量:', this.images.length);
-    console.log('='.repeat(50));
   }
 
   createImages() {
@@ -630,7 +586,6 @@ class FloatingImages {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(positions));
     } catch (e) {
-      console.warn('[FloatingImages] 保存位置失败:', e);
     }
   }
 
@@ -654,7 +609,6 @@ class FloatingImages {
         }
       });
     } catch (e) {
-      console.warn('[FloatingImages] 加载位置失败:', e);
     }
   }
 
@@ -662,7 +616,6 @@ class FloatingImages {
     try {
       localStorage.removeItem(this.storageKey);
     } catch (e) {
-      console.warn('[FloatingImages] 清除位置失败:', e);
     }
   }
 

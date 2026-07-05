@@ -8,7 +8,11 @@
     "products": "作品",
     "team": "关于我们",
     "home": "首页",
-    "social": "关注我们"
+    "social": "关注我们",
+    "submenu": {
+      "intro": "团队介绍",
+      "social": "关注我们"
+    }
   },
   "hero": {
     "title": "探索游戏世界",

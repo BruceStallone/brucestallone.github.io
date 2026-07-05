@@ -8,7 +8,11 @@
     "products": "Works",
     "team": "About Us",
     "home": "Home",
-    "social": "Follow Us"
+    "social": "Follow Us",
+    "submenu": {
+      "intro": "Team Intro",
+      "social": "Follow Us"
+    }
   },
   "hero": {
     "title": "Explore Gaming Worlds",

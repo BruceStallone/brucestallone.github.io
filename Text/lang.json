@@ -1,18 +1,102 @@
 {
   "brand": {
     "cn": "图南工作室",
-    "en": "TunanStudio",
-    "tagline": "探索叙事的无限可能"
+    "en": "Tunan Studio",
+    "tagline": "探索叙事的无限可能",
+    "eyebrow": "独立游戏工作室 · 自 2024",
+    "meta": {
+      "based": "云南 · 中国",
+      "theme": "民俗 · 叙事",
+      "medium": "游戏 · 小说"
+    }
   },
   "nav": {
     "products": "作品",
     "team": "关于我们",
     "home": "首页",
     "social": "关注我们",
+    "tools": "开源工具",
     "submenu": {
       "intro": "团队介绍",
       "social": "关注我们"
     }
+  },
+  "tools": {
+    "eyebrow": "工坊 · WORKBENCH",
+    "title": "开源工具",
+    "subtitle": "做游戏过程攒下来的小工具，统统免费～",
+    "notice": "免费用于商业 / 非商业用途；保留原作者信息即可～",
+    "sections": {
+      "mz": {
+        "label": "RPG MAKER MZ",
+        "title": "RPG Maker MZ 插件",
+        "subtitle": "下载 .js 丢到 js/plugins/，在插件管理器启用即可"
+      },
+      "godot": {
+        "label": "GODOT",
+        "title": "Godot 引擎工具",
+        "subtitle": "在线打开就能用，无需安装任何环境"
+      }
+    },
+    "items": [
+      {
+        "id": "1",
+        "section": "mz",
+        "name": "CRT 显示器滤镜",
+        "nameEn": "CRTFilter",
+        "description": "为游戏画面添加老式 CRT 显示器效果：扫描线、屏幕曲率、电子噪点、暗角、磷光余辉——五种效果可自由组合。",
+        "descriptionEn": "Add retro CRT monitor effects to your game: scanlines, screen curvature, noise, vignette, and phosphor glow — fully tunable.",
+        "tags": ["画面滤镜", "复古"],
+        "file": "Tools/CRTFilter.js",
+        "fileSize": "45 KB",
+        "fileType": ".js"
+      },
+      {
+        "id": "2",
+        "section": "mz",
+        "name": "文本渲染动画",
+        "nameEn": "Custom_TextAnimation",
+        "description": "为对话文本添加淡入淡出循环、上下浮动两种效果，可在游戏内实时切换。",
+        "descriptionEn": "Add fade-in/out loop and floating animations to dialogue text — switchable in real time during gameplay.",
+        "tags": ["文本", "UI", "动画"],
+        "file": "Tools/Custom_TextAnimation.js",
+        "fileSize": "19 KB",
+        "fileType": ".js"
+      },
+      {
+        "id": "3",
+        "section": "mz",
+        "name": "自定义鼠标光标",
+        "nameEn": "CustomCursor",
+        "description": "一键替换默认鼠标为自定义 PNG 光标；图片放 img/system/ 目录即可。",
+        "descriptionEn": "Replace the default mouse cursor with a custom PNG — just drop the image into img/system/ and you're set.",
+        "tags": ["UI", "光标"],
+        "file": "Tools/CustomCursor.js",
+        "fileSize": "5 KB",
+        "fileType": ".js"
+      },
+      {
+        "id": "4",
+        "section": "godot",
+        "name": "Godot Tween 动画手册",
+        "nameEn": "Godot Tween Curves",
+        "description": "48 种 Tween 动画曲线速查（12 Transition × 4 Ease），附适用场景建议，在线即开即用。",
+        "descriptionEn": "A 48-curve reference for Godot Tweens (12 Transition × 4 Ease), with usage suggestions — open in browser, no install needed.",
+        "tags": ["动画曲线", "Tween", "速查"],
+        "file": "Tools/godot_tween_transition_types.html",
+        "fileSize": "23 KB",
+        "fileType": ".html"
+      }
+    ],
+    "actions": {
+      "download": "下载 .js",
+      "openOnline": "立即打开",
+      "live": "在线",
+      "size": "大小",
+      "type": "类型",
+      "openNewTab": "新标签页打开"
+    },
+    "backToSite": "返回图南工作室"
   },
   "hero": {
     "title": "探索游戏世界",
@@ -20,8 +104,9 @@
     "scroll": "向下滚动"
   },
   "products": {
-    "title": "游戏",
-    "subtitle": "已上架游戏",
+    "title": "我们的游戏",
+    "subtitle": "探索我们精心打造的沉浸式游戏世界",
+    "intro": "每一款作品都源于我们对叙事的一次尝试——将中国传统民俗与当代游戏语言结合，让故事在不同玩家手中生长出独特的轮廓。",
     "games": [
       {
         "id": "1",
@@ -56,8 +141,8 @@
           "id": "1",
           "title": "花城秘事",
           "author": "金迪",
-          "cover": "../img/novels/novel-1.jpg",
-          "description": "《花城秘事》游戏同名小说\n花城少女徐梓卿意外被绑入殡仪馆，侥幸得救后父亲又离奇失踪，在一次奇遇中徐梓卿偶然获得了「开阴眼」的能力，她是否能找出父亲失踪的真相，以及揭开过去沉重的涟漪？",
+          "cover": "img/novels/novel-1.jpg",
+          "description": "花城少女徐梓卿意外被绑入殡仪馆，侥幸得救后父亲又离奇失踪，在一次奇遇中徐梓卿偶然获得了「开阴眼」的能力，她是否能找出父亲失踪的真相，以及揭开过去沉重的涟漪？",
           "genre": "都市异闻",
           "wordCount": "已上架【微信读书】",
           "status": "7.8万字",

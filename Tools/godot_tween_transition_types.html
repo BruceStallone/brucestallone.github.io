@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Godot Tween 函数动画手册 · 图南工作室</title>
+<style>
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+
+    /* Dark theme — 与官网统一 */
+    --color-ink: #0E0E10;
+    --color-ink-2: #16161A;
+    --color-ink-3: #1E1E22;
+    --color-line: #2A2A2F;
+    --color-line-soft: #1F1F23;
+    --color-paper: #EDEAE3;
+    --color-text: #E8E3D6;
+    --color-text-soft: #9F9A8E;
+    --color-text-mute: #6E6A60;
+    --color-accent: #C9554A;
+    --color-gold: #C9A86A;
+
+    /* 原工具页面使用的别名映射（保持内部兼容） */
+    --color-text-primary: var(--color-text);
+    --color-text-secondary: var(--color-text-soft);
+    --color-text-tertiary: var(--color-text-mute);
+    --color-background-primary: var(--color-ink-2);
+    --color-background-secondary: var(--color-ink-3);
+    --color-border-secondary: var(--color-line);
+    --color-border-tertiary: var(--color-line-soft);
+    --color-accent-primary: var(--color-gold);
+    --border-radius-md: 6px;
+    --border-radius-lg: 8px;
+  }
+  html, body {
+    background: var(--color-ink);
+    color: var(--color-text);
+    margin: 0;
+    padding: 0;
+  }
+  body { padding: 32px 0 64px; }
+
+  /* 容器：原页面外层 div 的最大宽度 */
+  body > div { padding: 0 24px; }
+
+  /* 标题区 */
+  h1 { color: var(--color-paper); }
+  /* label / 默认文字 */
+  label { color: var(--color-text-soft); }
+
+  /* 卡片 / 面板（依赖 var 的那些已经跟随；这条是兜底） */
+  div[style*="background: var(--color-background-primary)"] {
+    background: var(--color-ink-2) !important;
+    border-color: var(--color-line) !important;
+  }
+  div[style*="background: var(--color-background-secondary)"] {
+    background: var(--color-ink-3) !important;
+  }
+
+  /* canvas 容器原本硬编码 #F8F9FA，用属性选择器覆盖 */
+  div[style*="#F8F9FA"] {
+    background: var(--color-ink) !important;
+    border-color: var(--color-line) !important;
+  }
+
+  /* 表单控件深色化 */
+  select, input[type="range"], button, input, textarea {
+    background: var(--color-ink-3);
+    color: var(--color-text);
+    border: 1px solid var(--color-line);
+    border-radius: var(--border-radius-md);
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+  }
+  select { padding: 6px 10px; cursor: pointer; }
+  select:hover, select:focus { border-color: var(--color-gold); outline: none; }
+  select option { background: var(--color-ink-2); color: var(--color-text); }
+  input[type="range"] { accent-color: var(--color-gold); padding: 0; }
+  button {
+    padding: 8px 18px;
+    cursor: pointer;
+    color: var(--color-paper);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    font-weight: 500;
+  }
+  button:hover { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-ink); }
+  button:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+
+  /* 表格 */
+  table { color: var(--color-text); }
+  th { color: var(--color-text-soft); font-weight: 500; }
+
+  /* 文字颜色兜底：处理硬编码 #1f2328 / #57606a / #8c959f */
+  [style*="color: #1f2328"], [style*="color:#1f2328"] { color: var(--color-text) !important; }
+  [style*="color: #57606a"], [style*="color:#57606a"] { color: var(--color-text-soft) !important; }
+  [style*="color: #8c959f"], [style*="color:#8c959f"] { color: var(--color-text-mute) !important; }
+
+  /* 12 个 transition 卡片（JS 动态创建） */
+  div[style*="border-bottom: 0.5px solid"] { border-color: var(--color-line-soft) !important; }
+  div[style*="border: 0.5px solid"] { border-color: var(--color-line) !important; }
+  div[style*="border: 1px solid"] { border-color: var(--color-line) !important; }
+
+  /* 跳转链接 */
+  a { color: var(--color-gold); }
+  a:hover { color: var(--color-accent); }
+
+  /* 顶部返回 banner（与官网风格统一） */
+  .return-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 18px;
+    background: rgba(14, 14, 16, 0.86);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border-bottom: 1px solid var(--color-line);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .return-banner:hover { background: rgba(201, 85, 74, 0.16); border-bottom-color: var(--color-accent); }
+  .return-banner:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+  .return-banner-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: var(--color-accent);
+    color: var(--color-paper);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .return-banner-name { color: var(--color-text); }
+  .return-banner-sep {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-line), transparent);
+    margin: 0 8px;
+  }
+  .return-banner-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-gold);
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .return-banner:hover .return-banner-action { color: var(--color-accent); }
+  .return-banner-spacer { height: 42px; }
+  @media (max-width: 480px) {
+    .return-banner-name { display: none; }
+    .return-banner-sep { display: none; }
+  }
+  @supports not (backdrop-filter: blur(12px)) {
+    .return-banner { background: var(--color-ink); }
+  }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+  /* 滚动条深色（Webkit） */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--color-ink); }
+  ::-webkit-scrollbar-thumb { background: var(--color-ink-3); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-line); }
+</style>
+</head>
+<body>
+<a class="return-banner" href="../" aria-label="返回图南工作室">
+  <span class="return-banner-mark">图</span>
+  <span class="return-banner-name">图南工作室 · TunanStudio</span>
+  <span class="return-banner-sep" aria-hidden="true"></span>
+  <span class="return-banner-action">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M19 12H5M5 12L12 5M5 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>返回官网</span>
+  </span>
+</a>
+<div class="return-banner-spacer" aria-hidden="true"></div>
+<div style="max-width: 960px; margin: 0 auto; font-family: var(--font-sans), system-ui, -apple-system, sans-serif; color: var(--color-text-primary);">
+<h2 class="sr-only" style="text-align: center;">图南工作室Tunan Studio</h2>
+
+<div style="text-align: center; margin-bottom: 2rem;">
+  <h1 style="font-size: 20px; font-weight: 500; margin: 0 0 8px 0;">Godot Tween 函数动画手册</h1>
+  <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0;">48 种动画曲线（12 种 TransitionType x 4 种 EaseType ），附上适用场景建议</p>
+</div>
+
+<div style="background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1.25rem; margin-bottom: 1.5rem;">
+  <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;">
+    <div style="flex: 1; min-width: 200px;">
+      <label style="display: block; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px;">Transition type</label>
+      <select id="transSelect" style="width: 100%;">
+        <option value="linear">TRANS_LINEAR (线性)</option>
+        <option value="sine">TRANS_SINE (正弦)</option>
+        <option value="quad">TRANS_QUAD (二次方)</option>
+        <option value="cubic">TRANS_CUBIC (三次方)</option>
+        <option value="quart">TRANS_QUART (四次方)</option>
+        <option value="quint">TRANS_QUINT (五次方)</option>
+        <option value="expo">TRANS_EXPO (指数)</option>
+        <option value="circ">TRANS_CIRC (圆形)</option>
+        <option value="back">TRANS_BACK (回退)</option>
+        <option value="elastic">TRANS_ELASTIC (弹性)</option>
+        <option value="bounce">TRANS_BOUNCE (弹跳)</option>
+        <option value="spring">TRANS_SPRING (弹簧)</option>
+      </select>
+    </div>
+    <div style="flex: 1; min-width: 200px;">
+      <label style="display: block; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px;">Ease type</label>
+      <select id="easeSelect" style="width: 100%;">
+        <option value="in">EASE_IN (缓入)</option>
+        <option value="out">EASE_OUT (缓出)</option>
+        <option value="inout" selected>EASE_IN_OUT (缓入缓出)</option>
+        <option value="outin">EASE_OUT_IN (缓出缓入)</option>
+      </select>
+    </div>
+    <div style="display: flex; align-items: flex-end; gap: 12px;">
+      <div style="flex: 1; min-width: 180px;">
+        <label style="display: block; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px;">动画时长: <strong id="durationLabel">2.0</strong> 秒</label>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="range" id="durationSlider" min="0.5" max="9" step="0.1" value="2"
+            style="flex: 1; accent-color: var(--color-accent-primary, #378ADD); cursor: pointer;" />
+        </div>
+      </div>
+      <button id="playBtn" style="padding: 6px 20px; white-space: nowrap;">播放动画</button>
+    </div>
+  </div>
+
+  <div style="position: relative; width: 100%; height: 340px; background: #F8F9FA; border-radius: var(--border-radius-md); overflow: hidden;">
+    <canvas id="mainCanvas" width="900" height="340" style="width: 100%; height: 100%;"></canvas>
+  </div>
+
+  <div id="descBox" style="margin-top: 12px; padding: 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); font-size: 13px; line-height: 1.6;">
+    <strong id="descTitle">TRANS_LINEAR + EASE_IN_OUT</strong>
+    <span id="descText" style="color: var(--color-text-secondary);"> — 匀速运动，无加速或减速。适用于机械运动、进度条填充、不需要情感表达的动画。</span>
+  </div>
+</div>
+
+<div style="margin-bottom: 1.5rem;">
+  <h2 style="font-size: 15px; font-weight: 500; margin: 0 0 12px 0;">全部 12 种 TransitionType 速查</h2>
+  <div id="cardsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;"></div>
+</div>
+
+<div style="background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1.25rem;">
+  <h2 style="font-size: 15px; font-weight: 500; margin: 0 0 12px 0;">适用场景速查表</h2>
+  <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 0.5px solid var(--color-border-secondary);">
+        <th style="text-align: left; padding: 8px 4px; font-weight: 500;">Transition</th>
+        <th style="text-align: left; padding: 8px 4px; font-weight: 500;">推荐 Ease</th>
+        <th style="text-align: left; padding: 8px 4px; font-weight: 500;">典型场景</th>
+      </tr>
+    </thead>
+    <tbody id="sceneTable">
+    </tbody>
+  </table>
+</div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('mainCanvas');
+  const ctx = canvas.getContext('2d');
+  let dpr = window.devicePixelRatio || 1;
+  let W = 900, H = 340;
+  
+  function resizeCanvas() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    W = rect.width;
+    H = 340;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  const transitions = ['linear','sine','quad','cubic','quart','quint','expo','circ','back','elastic','bounce','spring'];
+  const eases = ['in','out','inout','outin'];
+
+  const descriptions = {
+    linear: { name: 'TRANS_LINEAR', concept: '线性', desc: '匀速运动，无加速或减速。适合机械运动、进度条、循环扫描等不需要情感表达的动画。', color: '#5F5E5A' },
+    sine: { name: 'TRANS_SINE', concept: '正弦曲线', desc: '最柔和的加速/减速，像自然呼吸一样平滑。适合 UI 淡入淡出、镜头缓慢推移。', color: '#534AB7' },
+    quad: { name: 'TRANS_QUAD', concept: '二次方', desc: '轻微加速/减速，比正弦更明显但仍自然。适合按钮悬停、小幅度位移。', color: '#1D9E75' },
+    cubic: { name: 'TRANS_CUBIC', concept: '三次方', desc: '中等强度的加速/减速，最常用的通用型缓动。适合大部分 UI 过渡和物体移动。', color: '#378ADD' },
+    quart: { name: 'TRANS_QUART', concept: '四次方', desc: '较强的加速/减速，动画感明显。适合卡片展开、面板滑入等需要"到位感"的动画。', color: '#D85A30' },
+    quint: { name: 'TRANS_QUINT', concept: '五次方', concept: '五次方', desc: '非常剧烈的加速/减速，有强烈的冲击力。适合全屏转场、爆炸效果、技能释放。', color: '#D4537E' },
+    expo: { name: 'TRANS_EXPO', concept: '指数函数', desc: '开始极慢，随后急剧加速（或相反）。适合科幻感UI、数据刷新、雷达扫描。', color: '#185FA5' },
+    circ: { name: 'TRANS_CIRC', concept: '圆形曲线', desc: '基于圆弧线，开始/结束的加速度变化很锐利。适合快速翻页、钟表指针、复古游戏感。', color: '#993C1D' },
+    back: { name: 'TRANS_BACK', concept: '回退', desc: '会稍微超过目标再回弹，像拉弓射箭。适合角色起跳准备、弹性按钮、卡通风格。', color: '#993556' },
+    elastic: { name: 'TRANS_ELASTIC', concept: '弹性', desc: '像橡皮筋一样在终点附近来回振荡。适合果冻状UI、搞笑动画、夸张反馈。', color: '#639922' },
+    bounce: { name: 'TRANS_BOUNCE', concept: '弹跳', desc: '像球落地一样在终点弹跳几次。适合角色落地、掉落物品、通知徽章跳动。', color: '#BA7517' },
+    spring: { name: 'TRANS_SPRING', concept: '弹簧', desc: '物理弹簧模拟， overshoot 后快速稳定。适合现代UI微交互、滑动结束回弹、开关切换。', color: '#0F6E56' }
+  };
+
+  const sceneData = [
+    { trans: 'linear', ease: 'inout', scenes: '进度条、扫描线、机械臂、血条扣减' },
+    { trans: 'sine', ease: 'inout', scenes: '淡入淡出、背景层缓慢移动、环境光变化' },
+    { trans: 'quad', ease: 'out', scenes: '按钮悬停放大、Tooltip 弹出、小幅菜单展开' },
+    { trans: 'cubic', ease: 'inout', scenes: '通用首选：窗口切换、角色移动、镜头平移' },
+    { trans: 'quart', ease: 'out', scenes: '侧栏滑出、对话框弹出、装备栏打开' },
+    { trans: 'quint', ease: 'out', scenes: '全屏场景切换、Boss 登场、大招特写' },
+    { trans: 'expo', ease: 'out', scenes: '快速消失/闪现、数据刷新、传送效果' },
+    { trans: 'circ', ease: 'inout', scenes: '翻页效果、快速开关、钟表指针动画' },
+    { trans: 'back', ease: 'out', scenes: '角色蓄力起跳、武器后坐、卡通风格UI' },
+    { trans: 'elastic', ease: 'out', scenes: '果冻按钮、夸张反馈、Q弹角色、搞笑动画' },
+    { trans: 'bounce', ease: 'out', scenes: '掉落拾取、角色落地、通知红点跳动、金币掉落' },
+    { trans: 'spring', ease: 'out', scenes: '滑动结束回弹、现代App转场、开关切换、列表滚动' },
+  ];
+
+  const easeNames = { in: 'EASE_IN', out: 'EASE_OUT', inout: 'EASE_IN_OUT', outin: 'EASE_OUT_IN' };
+  const easeDescs = {
+    in: '缓入 — 开始慢，结束快。像汽车启动加速。',
+    out: '缓出 — 开始快，结束慢。像汽车刹车减速。',
+    inout: '缓入缓出 — 两端慢，中间快。最自然的人类动作节奏。',
+    outin: '缓出缓入 — 两端快，中间慢。有独特的"停顿感"。'
+  };
+
+  function easeOutBounce(t) {
+    const n1 = 7.5625, d1 = 2.75;
+    if (t < 1 / d1) return n1 * t * t;
+    else if (t < 2 / d1) return n1 * (t -= 1.5 / d1) * t + 0.75;
+    else if (t < 2.5 / d1) return n1 * (t -= 2.25 / d1) * t + 0.9375;
+    else return n1 * (t -= 2.625 / d1) * t + 0.984375;
+  }
+
+  function getEaseFunc(trans, ease) {
+    const c1 = 1.70158, c2 = c1 * 1.525, c3 = c1 + 1;
+    const c4 = (2 * Math.PI) / 3, c5 = (2 * Math.PI) / 4.5;
+
+    const fs = {
+      linear: { in: t => t, out: t => t, inout: t => t, outin: t => t },
+
+      sine: {
+        in: t => 1 - Math.cos((t * Math.PI) / 2),
+        out: t => Math.sin((t * Math.PI) / 2),
+        inout: t => -(Math.cos(Math.PI * t) - 1) / 2,
+        outin: t => {
+          if (t < 0.5) return (Math.sin((t * 2) * Math.PI / 2)) / 2;
+          return 0.5 + (1 - Math.cos(((t - 0.5) * 2 * Math.PI) / 2)) / 2;
+        }
+      },
+
+      quad: {
+        in: t => t * t,
+        out: t => 1 - (1 - t) * (1 - t),
+        inout: t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
+        outin: t => t < 0.5 ? 1 - (1 - 2 * t) * (1 - 2 * t) / 2 : 0.5 + (2 * t - 1) * (2 * t - 1) / 2
+      },
+
+      cubic: {
+        in: t => t * t * t,
+        out: t => 1 - Math.pow(1 - t, 3),
+        inout: t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+        outin: t => t < 0.5 ? 1 - Math.pow(1 - 2 * t, 3) / 2 : 0.5 + Math.pow(2 * t - 1, 3) / 2
+      },
+
+      quart: {
+        in: t => t * t * t * t,
+        out: t => 1 - Math.pow(1 - t, 4),
+        inout: t => t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2,
+        outin: t => t < 0.5 ? 1 - Math.pow(1 - 2 * t, 4) / 2 : 0.5 + Math.pow(2 * t - 1, 4) / 2
+      },
+
+      quint: {
+        in: t => t * t * t * t * t,
+        out: t => 1 - Math.pow(1 - t, 5),
+        inout: t => t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2,
+        outin: t => t < 0.5 ? 1 - Math.pow(1 - 2 * t, 5) / 2 : 0.5 + Math.pow(2 * t - 1, 5) / 2
+      },
+
+      expo: {
+        in: t => t === 0 ? 0 : Math.pow(2, 10 * (t - 1)),
+        out: t => t === 1 ? 1 : 1 - Math.pow(2, -10 * t),
+        inout: t => t === 0 ? 0 : t === 1 ? 1 : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2,
+        outin: t => {
+          if (t === 0) return 0; if (t === 1) return 1;
+          if (t < 0.5) return (1 - Math.pow(2, -10 * (1 - 2 * t))) / 2;
+          return 0.5 + Math.pow(2, 10 * ((2 * t - 1) - 1) + 10) / 2;
+        }
+      },
+
+      circ: {
+        in: t => 1 - Math.sqrt(1 - Math.pow(t, 2)),
+        out: t => Math.sqrt(1 - Math.pow(t - 1, 2)),
+        inout: t => t < 0.5 ? (1 - Math.sqrt(1 - Math.pow(2 * t, 2))) / 2 : (Math.sqrt(1 - Math.pow(-2 * t + 2, 2)) + 1) / 2,
+        outin: t => t < 0.5 ? Math.sqrt(1 - Math.pow(1 - 2 * t, 2)) / 2 : 1 - Math.sqrt(1 - Math.pow(2 * t - 1, 2)) / 2
+      },
+
+      back: {
+        in: t => c3 * t * t * t - c1 * t * t,
+        out: t => 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2),
+        inout: t => t < 0.5 ? (Math.pow(2 * t, 2) * ((c2 + 1) * 2 * t - c2)) / 2 : (Math.pow(2 * t - 2, 2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2,
+        outin: t => {
+          if (t < 0.5) return 0.5 * (1 + c3 * Math.pow(1 - 2 * t - 1, 3) + c1 * Math.pow(1 - 2 * t - 1, 2));
+          return 0.5 + 0.5 * (c3 * Math.pow(2 * t - 1, 3) - c1 * Math.pow(2 * t - 1, 2));
+        }
+      },
+
+      elastic: {
+        in: t => t === 0 ? 0 : t === 1 ? 1 : -Math.pow(2, 10 * t - 10) * Math.sin((t * 10 - 10.75) * c4),
+        out: t => t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1,
+        inout: t => t === 0 ? 0 : t === 1 ? 1 : t < 0.5 ? -(Math.pow(2, 20 * t - 10) * Math.sin((20 * t - 11.125) * c5)) / 2 : (Math.pow(2, -20 * t + 10) * Math.sin((20 * t - 11.125) * c5)) / 2 + 1,
+        outin: t => {
+          if (t === 0) return 0; if (t === 1) return 1;
+          if (t < 0.5) return (Math.pow(2, -10 * t * 2) * Math.sin((t * 2 * 10 - 0.75) * c4) + 1) / 2;
+          return 0.5 + (-(Math.pow(2, 10 * ((t - 0.5) * 2) - 10) * Math.sin((((t - 0.5) * 2) * 10 - 10.75) * c4))) / 2;
+        }
+      },
+
+      bounce: {
+        in: t => 1 - easeOutBounce(1 - t),
+        out: t => easeOutBounce(t),
+        inout: t => t < 0.5 ? (1 - easeOutBounce(1 - 2 * t)) / 2 : (1 + easeOutBounce(2 * t - 1)) / 2,
+        outin: t => t < 0.5 ? easeOutBounce(t * 2) / 2 : 0.5 + (1 - easeOutBounce(1 - (t - 0.5) * 2)) / 2
+      },
+
+      spring: {
+        in: t => {
+          const damp = 0.35, freq = 5;
+          return 1 - Math.exp(-damp * (1 - t) * freq * 4) * Math.cos(freq * (1 - t) * Math.PI * 1.5);
+        },
+        out: t => {
+          const damp = 0.35, freq = 5;
+          return 1 - Math.exp(-damp * t * freq * 4) * Math.cos(freq * t * Math.PI * 1.5);
+        },
+        inout: t => {
+          const damp = 0.35, freq = 5;
+          if (t < 0.5) return 0.5 * (1 - Math.exp(-damp * t * 2 * freq * 4) * Math.cos(freq * t * 2 * Math.PI * 1.5));
+          return 0.5 + 0.5 * (1 - Math.exp(-damp * (t - 0.5) * 2 * freq * 4) * Math.cos(freq * (t - 0.5) * 2 * Math.PI * 1.5));
+        },
+        outin: t => {
+          const damp = 0.35, freq = 5;
+          if (t < 0.5) {
+            const v = 1 - Math.exp(-damp * t * 2 * freq * 4) * Math.cos(freq * t * 2 * Math.PI * 1.5);
+            return v / 2;
+          }
+          const v = 1 - Math.exp(-damp * (1 - t) * 2 * freq * 4) * Math.cos(freq * (1 - t) * 2 * Math.PI * 1.5);
+          return 1 - v / 2;
+        }
+      }
+    };
+    return fs[trans][ease];
+  }
+
+  let animTime = 0;
+  let isPlaying = false;
+  let startTime = 0;
+  let duration = 2000;
+
+  const durationSlider = document.getElementById('durationSlider');
+  const durationLabel = document.getElementById('durationLabel');
+
+  durationSlider.addEventListener('input', function() {
+    const val = parseFloat(this.value);
+    duration = Math.round(val * 1000);
+    durationLabel.textContent = val.toFixed(1);
+  });
+
+  function drawGrid(marginLeft, marginTop, gw, gh) {
+    ctx.strokeStyle = 'rgba(232,227,214,0.08)';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i <= 5; i++) {
+      const y = marginTop + gh - (i / 5) * gh;
+      ctx.beginPath(); ctx.moveTo(marginLeft, y); ctx.lineTo(marginLeft + gw, y); ctx.stroke();
+    }
+    for (let i = 0; i <= 10; i++) {
+      const x = marginLeft + (i / 10) * gw;
+      ctx.beginPath(); ctx.moveTo(x, marginTop); ctx.lineTo(x, marginTop + gh); ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(232,227,214,0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(marginLeft, marginTop); ctx.lineTo(marginLeft, marginTop + gh); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(marginLeft, marginTop + gh); ctx.lineTo(marginLeft + gw, marginTop + gh); ctx.stroke();
+  }
+
+  function drawCurve(trans, ease, color, marginLeft, marginTop, gw, gh) {
+    const f = getEaseFunc(trans, ease);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i <= 300; i++) {
+      const t = i / 300;
+      const v = f(t);
+      const x = marginLeft + t * gw;
+      const y = marginTop + gh - v * gh;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  function drawBall(progress, trans, ease, color, trackY, startX, endX) {
+    const f = getEaseFunc(trans, ease);
+    const v = f(progress);
+    const x = startX + v * (endX - startX);
+    const y = trackY;
+
+    // Shadow
+    ctx.fillStyle = 'rgba(232,227,214,0.08)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 18, 10, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Ball
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.beginPath();
+    ctx.arc(x - 3, y - 3, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Track line
+    ctx.strokeStyle = 'rgba(232,227,214,0.1)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(startX, y); ctx.lineTo(endX, y); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Labels
+    ctx.fillStyle = 'rgba(232,227,214,0.4)';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('0', startX, y + 32);
+    ctx.fillText('1', endX, y + 32);
+  }
+
+  function drawMain() {
+    const trans = document.getElementById('transSelect').value;
+    const ease = document.getElementById('easeSelect').value;
+    const info = descriptions[trans];
+    const progress = isPlaying ? Math.min((Date.now() - startTime) / duration, 1) : 0;
+
+    ctx.clearRect(0, 0, W, H);
+
+    const marginLeft = 50, marginTop = 30, gw = Math.min(320, W * 0.38), gh = 180;
+
+    // Labels
+    ctx.fillStyle = 'rgba(232,227,214,0.35)';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('value 1.0', marginLeft - 6, marginTop + 6);
+    ctx.textAlign = 'center';
+    ctx.fillText('time 1.0', marginLeft + gw, marginTop + gh + 16);
+    ctx.fillText('0.0', marginLeft, marginTop + gh + 16);
+
+    drawGrid(marginLeft, marginTop, gw, gh);
+    drawCurve(trans, ease, info.color, marginLeft, marginTop, gw, gh);
+
+    // Current point on curve
+    if (isPlaying || progress > 0) {
+      const f = getEaseFunc(trans, ease);
+      const v = f(progress);
+      const cx = marginLeft + progress * gw;
+      const cy = marginTop + gh - v * gh;
+      ctx.fillStyle = info.color;
+      ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgb(14,14,16)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    // Animation track on right
+    const trackX1 = marginLeft + gw + 60;
+    const trackX2 = W - 40;
+    const trackY = marginTop + gh / 2;
+
+    ctx.fillStyle = 'rgba(232,227,214,0.5)';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('动画演示', trackX1, marginTop - 6);
+
+    drawBall(progress, trans, ease, info.color, trackY, trackX1, trackX2);
+
+    // Progress bar under track
+    const pbY = trackY + 45;
+    ctx.fillStyle = 'rgba(232,227,214,0.08)';
+    ctx.fillRect(trackX1, pbY, trackX2 - trackX1, 6);
+    ctx.fillStyle = info.color;
+    ctx.fillRect(trackX1, pbY, (trackX2 - trackX1) * progress, 6);
+    ctx.fillStyle = 'rgba(232,227,214,0.4)';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText((progress * 100).toFixed(0) + '%', trackX1 + (trackX2 - trackX1) * progress, pbY + 20);
+
+    if (isPlaying && progress < 1) {
+      requestAnimationFrame(drawMain);
+    } else if (progress >= 1) {
+      isPlaying = false;
+    }
+  }
+
+  function play() {
+    isPlaying = true;
+    startTime = Date.now();
+    drawMain();
+  }
+
+  document.getElementById('playBtn').addEventListener('click', play);
+  document.getElementById('transSelect').addEventListener('change', () => {
+    updateDesc();
+    if (!isPlaying) drawMain();
+  });
+  document.getElementById('easeSelect').addEventListener('change', () => {
+    updateDesc();
+    if (!isPlaying) drawMain();
+  });
+
+  function updateDesc() {
+    const trans = document.getElementById('transSelect').value;
+    const ease = document.getElementById('easeSelect').value;
+    const info = descriptions[trans];
+    document.getElementById('descTitle').textContent = info.name + ' + ' + easeNames[ease];
+    document.getElementById('descTitle').style.color = info.color;
+    document.getElementById('descText').textContent = ' — ' + info.desc + ' ' + easeDescs[ease];
+  }
+
+  // Build cards
+  const cardsGrid = document.getElementById('cardsGrid');
+  transitions.forEach(t => {
+    const info = descriptions[t];
+    const card = document.createElement('div');
+    card.style.cssText = 'background: var(--color-background-primary); border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); padding: 12px; cursor: pointer; transition: border-color 0.2s;';
+    card.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <div style="width: 10px; height: 10px; border-radius: 50%; background: ${info.color}; flex-shrink: 0;"></div>
+        <span style="font-size: 13px; font-weight: 500;">${info.name}</span>
+        <span style="font-size: 11px; color: var(--color-text-tertiary); margin-left: auto;">${info.concept}</span>
+      </div>
+      <canvas class="card-canvas" data-trans="${t}" width="200" height="60" style="width: 100%; height: 60px;"></canvas>
+    `;
+    card.addEventListener('click', () => {
+      document.getElementById('transSelect').value = t;
+      updateDesc();
+      drawMain();
+    });
+    card.addEventListener('mouseenter', () => { card.style.borderColor = 'var(--color-border-secondary)'; });
+    card.addEventListener('mouseleave', () => { card.style.borderColor = 'var(--color-border-tertiary)'; });
+    cardsGrid.appendChild(card);
+  });
+
+  // Draw card mini curves
+  setTimeout(() => {
+    document.querySelectorAll('.card-canvas').forEach(c => {
+      const t = c.dataset.trans;
+      const cctx = c.getContext('2d');
+      const cw = c.width, ch = c.height;
+      cctx.clearRect(0, 0, cw, ch);
+      const f = getEaseFunc(t, 'inout');
+      cctx.strokeStyle = descriptions[t].color;
+      cctx.lineWidth = 2;
+      cctx.beginPath();
+      for (let i = 0; i <= 100; i++) {
+        const p = i / 100;
+        const v = f(p);
+        const x = 4 + p * (cw - 8);
+        const y = ch - 4 - v * (ch - 8);
+        if (i === 0) cctx.moveTo(x, y); else cctx.lineTo(x, y);
+      }
+      cctx.stroke();
+    });
+  }, 50);
+
+  // Build scene table
+  const sceneTable = document.getElementById('sceneTable');
+  sceneData.forEach((row, i) => {
+    const tr = document.createElement('tr');
+    tr.style.borderBottom = i === sceneData.length - 1 ? 'none' : '0.5px solid var(--color-border-tertiary)';
+    const info = descriptions[row.trans];
+    tr.innerHTML = `
+      <td style="padding: 10px 4px; font-weight: 500; color: ${info.color};">${info.name}</td>
+      <td style="padding: 10px 4px; font-family: var(--font-mono), monospace; font-size: 12px; color: var(--color-text-secondary);">${row.ease.toUpperCase()}</td>
+      <td style="padding: 10px 4px; color: var(--color-text-secondary);">${row.scenes}</td>
+    `;
+    sceneTable.appendChild(tr);
+  });
+
+  updateDesc();
+  drawMain();
+})();
+</script>
+</div>
+</body>
+</html>
+

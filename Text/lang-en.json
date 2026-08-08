@@ -1,18 +1,102 @@
 {
   "brand": {
-    "cn": "图南工作室",
-    "en": "TunanStudio",
-    "tagline": "Exploring the Infinite Possibilities of Narrative"
+    "cn": "Tunan Studio",
+    "en": "Tunan Studio",
+    "tagline": "Exploring the Infinite Possibilities of Narrative",
+    "eyebrow": "Indie Game Studio · Since 2024",
+    "meta": {
+      "based": "Yunnan · China",
+      "theme": "Folklore · Narrative",
+      "medium": "Games · Novels"
+    }
   },
   "nav": {
     "products": "Works",
     "team": "About Us",
     "home": "Home",
     "social": "Follow Us",
+    "tools": "Open Source Tools",
     "submenu": {
       "intro": "Team Intro",
       "social": "Follow Us"
     }
+  },
+  "tools": {
+    "eyebrow": "WORKBENCH",
+    "title": "Open Source Tools",
+    "subtitle": "Hand-crafted utilities from our game dev journey — all free.",
+    "notice": "Free for commercial and non-commercial use. Just keep the credit line.",
+    "sections": {
+      "mz": {
+        "label": "RPG MAKER MZ",
+        "title": "RPG Maker MZ Plugins",
+        "subtitle": "Drop the .js into js/plugins/ and enable it in the Plugin Manager."
+      },
+      "godot": {
+        "label": "GODOT",
+        "title": "Godot Engine Tools",
+        "subtitle": "Open in your browser — no install required."
+      }
+    },
+    "items": [
+      {
+        "id": "1",
+        "section": "mz",
+        "name": "CRT Monitor Filter",
+        "nameEn": "CRTFilter",
+        "description": "Adds retro CRT monitor effects: scanlines, screen curvature, noise, vignette, and phosphor glow — fully tunable.",
+        "descriptionEn": "Adds retro CRT monitor effects: scanlines, screen curvature, noise, vignette, and phosphor glow — fully tunable.",
+        "tags": ["Filter", "Retro"],
+        "file": "Tools/CRTFilter.js",
+        "fileSize": "45 KB",
+        "fileType": ".js"
+      },
+      {
+        "id": "2",
+        "section": "mz",
+        "name": "Text Animation",
+        "nameEn": "Custom_TextAnimation",
+        "description": "Add fade-in/out loop and floating animations to dialogue text — switchable in real time during gameplay.",
+        "descriptionEn": "Add fade-in/out loop and floating animations to dialogue text — switchable in real time during gameplay.",
+        "tags": ["Text", "UI", "Animation"],
+        "file": "Tools/Custom_TextAnimation.js",
+        "fileSize": "19 KB",
+        "fileType": ".js"
+      },
+      {
+        "id": "3",
+        "section": "mz",
+        "name": "Custom Cursor",
+        "nameEn": "CustomCursor",
+        "description": "Replace the default mouse cursor with a custom PNG — just drop the image into img/system/ and you're set.",
+        "descriptionEn": "Replace the default mouse cursor with a custom PNG — just drop the image into img/system/ and you're set.",
+        "tags": ["UI", "Cursor"],
+        "file": "Tools/CustomCursor.js",
+        "fileSize": "5 KB",
+        "fileType": ".js"
+      },
+      {
+        "id": "4",
+        "section": "godot",
+        "name": "Godot Tween Curves",
+        "nameEn": "Godot Tween Curves",
+        "description": "A 48-curve reference for Godot Tweens (12 Transition × 4 Ease), with usage suggestions — open in browser, no install needed.",
+        "descriptionEn": "A 48-curve reference for Godot Tweens (12 Transition × 4 Ease), with usage suggestions — open in browser, no install needed.",
+        "tags": ["Curves", "Tween", "Reference"],
+        "file": "Tools/godot_tween_transition_types.html",
+        "fileSize": "23 KB",
+        "fileType": ".html"
+      }
+    ],
+    "actions": {
+      "download": "Download .js",
+      "openOnline": "Open Now",
+      "live": "LIVE",
+      "size": "Size",
+      "type": "Type",
+      "openNewTab": "Opens in a new tab"
+    },
+    "backToSite": "Back to TunanStudio"
   },
   "hero": {
     "title": "Explore Gaming Worlds",
@@ -20,8 +104,9 @@
     "scroll": "Scroll Down"
   },
   "products": {
-    "title": "Games",
-    "subtitle": "Published Games",
+    "title": "Our Games",
+    "subtitle": "Hand-crafted immersive worlds awaiting exploration",
+    "intro": "Each title is a small wager with narrative — we braid traditional Chinese folklore with the language of contemporary games, so every story grows its own silhouette in each player's hands.",
     "games": [
       {
         "id": "1",
@@ -56,7 +141,7 @@
           "id": "1",
           "title": "The Tale of Spring City",
           "author": "Kingdy Jin",
-          "cover": "../img/novels/novel-1.jpg",
+          "cover": "img/novels/novel-1.jpg",
           "description": "Ziqing Xu, a young girl from Spring City. Her father mysteriously disappeared soon after. During a strange turn of events, she suddenly gains the ability to see into the supernatural realm—the so-called \"Yin Yan.\" Will she be able to uncover the truth?",
           "genre": "Mystery",
           "wordCount": "Available on WeRead",

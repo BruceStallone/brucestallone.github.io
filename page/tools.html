@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="图南工作室开源工具 - 我们做游戏过程攒下来的小工具，统统免费">
+  <meta name="theme-color" content="#1C1C1E">
+
+  <title>开源工具 - 图南工作室</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231C1C1E'/%3E%3Ctext x='16' y='23' font-size='20' font-family='serif' fill='%23C8463C' text-anchor='middle'%3E%E5%9B%BE%3C/text%3E%3C/svg%3E">
+  <link rel="preload" href="../Font/cuan.ttf" as="font" type="font/ttf" crossorigin>
+
+  <link rel="stylesheet" href="../css/styles.css">
+
+  <script nomodule src="../js/bundle.min.js"></script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header class="navbar" role="banner">
+    <nav class="navbar-container" role="navigation" aria-label="主导航">
+      <a href="/" class="navbar-brand" aria-label="图南工作室首页">
+        <span class="navbar-brand-mark">图</span>
+        <span>TunanStudio</span>
+      </a>
+      <ul class="navbar-nav">
+        <li><a href="/" class="nav-link" data-nav="home" data-i18n="nav.home">首页</a></li>
+        <li><a href="/products" class="nav-link" data-nav="products" data-i18n="nav.products">作品</a></li>
+        <li><a href="/tools" class="nav-link active" data-nav="tools" data-i18n="nav.tools">开源工具</a></li>
+        <li class="nav-dropdown">
+          <a href="/team" class="nav-link nav-dropdown-toggle" data-nav="team" data-i18n="nav.team" aria-expanded="false" aria-haspopup="true">关于我们</a>
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="/team" class="nav-dropdown-item" role="menuitem" data-nav="team-intro" data-i18n="nav.submenu.intro">团队介绍</a>
+            <a href="/social" class="nav-dropdown-item" role="menuitem" data-nav="social" data-i18n="nav.submenu.social">关注我们</a>
+          </div>
+        </li>
+      </ul>
+
+      <div class="navbar-actions">
+        <div class="language-switcher" role="group" aria-label="语言切换">
+          <button class="lang-btn active" data-lang="zh-CN" aria-label="切换到中文" aria-pressed="true">中文</button>
+          <button class="lang-btn" data-lang="en" aria-label="Switch to English" aria-pressed="false">English</button>
+        </div>
+
+        <button class="mobile-menu-toggle" aria-label="打开菜单" aria-expanded="false" aria-controls="mobile-menu">
+          <span class="menu-icon"></span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+      <button class="mobile-menu-close" aria-label="关闭菜单">
+        <span class="close-icon"></span>
+      </button>
+      <ul class="mobile-nav">
+        <li><a href="/" class="mobile-nav-link" data-nav="home" data-i18n="nav.home">首页</a></li>
+        <li><a href="/products" class="mobile-nav-link" data-nav="products" data-i18n="nav.products">作品</a></li>
+        <li><a href="/tools" class="mobile-nav-link active" data-nav="tools" data-i18n="nav.tools">开源工具</a></li>
+        <li class="mobile-nav-dropdown">
+          <a href="/team" class="mobile-nav-link mobile-nav-dropdown-toggle" data-nav="team" data-i18n="nav.team" aria-expanded="false">关于我们</a>
+          <ul class="mobile-nav-dropdown-menu" role="menu">
+            <li><a href="/team" class="mobile-nav-dropdown-item" data-nav="team-intro" data-i18n="nav.submenu.intro">团队介绍</a></li>
+            <li><a href="/social" class="mobile-nav-dropdown-item" data-nav="social" data-i18n="nav.submenu.social">关注我们</a></li>
+          </ul>
+        </li>
+      </ul>
+      <div class="mobile-lang-switcher">
+        <button class="lang-btn active" data-lang="zh-CN">中文</button>
+        <button class="lang-btn" data-lang="en">English</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" role="main">
+    <section class="page tools-page">
+      <div class="container">
+        <header class="page-header tools-page-header" data-animate>
+          <span class="page-eyebrow" data-i18n="tools.eyebrow">工坊 · WORKBENCH</span>
+          <h1 class="page-title" data-i18n="tools.title">开源工具</h1>
+          <p class="page-subtitle" data-i18n="tools.subtitle">做游戏过程攒下来的小工具，统统免费～</p>
+          <div class="tools-notice" role="note" aria-label="License notice">
+            <span class="tools-notice-icon" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V11C4 16 7.5 20.5 12 22C16.5 20.5 20 16 20 11V6L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="tools-notice-text" data-i18n="tools.notice">免费用于商业 / 非商业用途；保留原作者信息即可～</span>
+          </div>
+        </header>
+
+        <section class="tools-section" data-animate>
+          <div class="tools-section-header">
+            <span class="tools-section-label">RPG MAKER MZ</span>
+            <h2 class="tools-section-title" data-i18n="tools.sections.mz.title">RPG Maker MZ 插件</h2>
+            <p class="tools-section-subtitle" data-i18n="tools.sections.mz.subtitle">下载 .js 丢到 js/plugins/，在插件管理器启用即可</p>
+          </div>
+          <div class="tools-grid">
+            <article class="tool-card" data-animate data-kind="download">
+              <div class="tool-card-top">
+                <span class="tool-index">NO. 1</span>
+                <span class="tool-filetype">.js</span>
+              </div>
+              <h3 class="tool-name">
+                <span class="tool-name-cn">CRT 显示器滤镜</span>
+                <span class="tool-name-en">CRTFilter</span>
+              </h3>
+              <p class="tool-description">为游戏画面添加老式 CRT 显示器效果：扫描线、屏幕曲率、电子噪点、暗角、磷光余辉——五种效果可自由组合。</p>
+              <div class="tool-tags">
+                <span class="tool-tag">画面滤镜</span>
+                <span class="tool-tag">复古</span>
+              </div>
+              <div class="tool-card-bottom">
+                <div class="tool-meta">
+                  <span class="tool-meta-item"><span class="tool-meta-label">大小</span><span class="tool-meta-value">45 KB</span></span>
+                </div>
+                <a class="tool-action tool-action-download" href="../Tools/CRTFilter.js" download>
+                  <span>下载 .js</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 4V16M12 16L7 11M12 16L17 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 20H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </div>
+            </article>
+
+            <article class="tool-card" data-animate data-kind="download">
+              <div class="tool-card-top">
+                <span class="tool-index">NO. 2</span>
+                <span class="tool-filetype">.js</span>
+              </div>
+              <h3 class="tool-name">
+                <span class="tool-name-cn">文本渲染动画</span>
+                <span class="tool-name-en">Custom_TextAnimation</span>
+              </h3>
+              <p class="tool-description">为对话文本添加淡入淡出循环、上下浮动两种效果，可在游戏内实时切换。</p>
+              <div class="tool-tags">
+                <span class="tool-tag">文本</span>
+                <span class="tool-tag">UI</span>
+                <span class="tool-tag">动画</span>
+              </div>
+              <div class="tool-card-bottom">
+                <div class="tool-meta">
+                  <span class="tool-meta-item"><span class="tool-meta-label">大小</span><span class="tool-meta-value">19 KB</span></span>
+                </div>
+                <a class="tool-action tool-action-download" href="../Tools/Custom_TextAnimation.js" download>
+                  <span>下载 .js</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 4V16M12 16L7 11M12 16L17 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 20H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </div>
+            </article>
+
+            <article class="tool-card" data-animate data-kind="download">
+              <div class="tool-card-top">
+                <span class="tool-index">NO. 3</span>
+                <span class="tool-filetype">.js</span>
+              </div>
+              <h3 class="tool-name">
+                <span class="tool-name-cn">自定义鼠标光标</span>
+                <span class="tool-name-en">CustomCursor</span>
+              </h3>
+              <p class="tool-description">一键替换默认鼠标为自定义 PNG 光标；图片放 img/system/ 目录即可。</p>
+              <div class="tool-tags">
+                <span class="tool-tag">UI</span>
+                <span class="tool-tag">光标</span>
+              </div>
+              <div class="tool-card-bottom">
+                <div class="tool-meta">
+                  <span class="tool-meta-item"><span class="tool-meta-label">大小</span><span class="tool-meta-value">5 KB</span></span>
+                </div>
+                <a class="tool-action tool-action-download" href="../Tools/CustomCursor.js" download>
+                  <span>下载 .js</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 4V16M12 16L7 11M12 16L17 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 20H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tools-section" data-animate>
+          <div class="tools-section-header">
+            <span class="tools-section-label">GODOT</span>
+            <h2 class="tools-section-title" data-i18n="tools.sections.godot.title">Godot 引擎工具</h2>
+            <p class="tools-section-subtitle" data-i18n="tools.sections.godot.subtitle">在线打开就能用，无需安装任何环境</p>
+          </div>
+          <div class="tools-grid tools-grid-single">
+            <article class="tool-card tool-card-featured" data-animate data-kind="online">
+              <div class="tool-featured-grid">
+                <div class="tool-featured-left">
+                  <div class="tool-card-top">
+                    <span class="tool-index">NO. 4</span>
+                    <span class="tool-filetype">.html</span>
+                    <span class="tool-live" aria-label="在线"><span class="tool-live-dot" aria-hidden="true"></span>在线</span>
+                  </div>
+                  <h3 class="tool-name">
+                    <span class="tool-name-cn">Godot Tween 动画手册</span>
+                    <span class="tool-name-en">Godot Tween Curves</span>
+                  </h3>
+                  <p class="tool-description">48 种 Tween 动画曲线速查（12 Transition × 4 Ease），附适用场景建议，在线即开即用。</p>
+                  <div class="tool-tags">
+                    <span class="tool-tag">动画曲线</span>
+                    <span class="tool-tag">Tween</span>
+                    <span class="tool-tag">速查</span>
+                  </div>
+                  <div class="tool-card-bottom">
+                    <div class="tool-meta">
+                      <span class="tool-meta-item"><span class="tool-meta-label">大小</span><span class="tool-meta-value">23 KB</span></span>
+                    </div>
+                    <a class="tool-action tool-action-open" href="../Tools/godot_tween_transition_types.html" target="_blank" rel="noopener noreferrer">
+                      <span>立即打开</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                  </div>
+                </div>
+                <div class="tool-featured-right" aria-hidden="true">
+                  <div class="tool-snapshot">
+                    <div class="tool-snapshot-bar">
+                      <span class="tool-snapshot-dot tool-snapshot-dot-r"></span>
+                      <span class="tool-snapshot-dot tool-snapshot-dot-y"></span>
+                      <span class="tool-snapshot-dot tool-snapshot-dot-g"></span>
+                      <span class="tool-snapshot-url">godot-tween-curves</span>
+                    </div>
+                    <div class="tool-snapshot-body">
+                      <div class="tool-snapshot-title">Tween 动画手册</div>
+                      <div class="tool-snapshot-sub">12 × 4 曲线</div>
+                      <div class="tool-snapshot-row">
+                        <span class="tool-snapshot-chip">TRANS_LINEAR</span>
+                        <span class="tool-snapshot-chip tool-snapshot-chip-accent">EASE_IN_OUT</span>
+                      </div>
+                      <div class="tool-snapshot-canvas">
+                        <svg viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true">
+                          <defs>
+                            <linearGradient id="snapStroke" x1="0" y1="0" x2="1" y2="0">
+                              <stop offset="0%" stop-color="#C9A86A" stop-opacity="0.3"/>
+                              <stop offset="100%" stop-color="#C9A86A" stop-opacity="1"/>
+                            </linearGradient>
+                          </defs>
+                          <line x1="0" y1="78" x2="200" y2="78" stroke="rgba(232,227,214,0.1)" stroke-width="0.5"/>
+                          <line x1="0" y1="2" x2="200" y2="2" stroke="rgba(232,227,214,0.05)" stroke-width="0.5"/>
+                          <path d="M0,78 C50,78 80,40 110,30 C140,22 170,18 200,15" fill="none" stroke="url(#snapStroke)" stroke-width="1.4" stroke-linecap="round"/>
+                        </svg>
+                      </div>
+                      <div class="tool-snapshot-mini">
+                        <span class="tool-snapshot-mini-bar" style="--h:18%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:42%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:72%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:90%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:78%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:96%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:64%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:36%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:30%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:52%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:80%"></span>
+                        <span class="tool-snapshot-mini-bar" style="--h:88%"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p class="footer-copyright" data-i18n="footer.copyright">© 2024-2026 图南工作室 TunanStudio. All rights reserved.</p>
+      <nav class="footer-nav" aria-label="底部导航">
+        <a href="#" class="footer-link" data-i18n="footer.privacy">隐私政策</a>
+        <a href="#" class="footer-link" data-i18n="footer.terms">服务条款</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module" src="../script/main.js"></script>
+</body>
+</html>

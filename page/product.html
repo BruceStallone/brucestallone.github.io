@@ -9,7 +9,7 @@
   <title>作品 - 图南工作室</title>
   
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231C1C1E'/%3E%3Ctext x='16' y='23' font-size='20' font-family='serif' fill='%23C8463C' text-anchor='middle'%3E%E5%9B%BE%3C/text%3E%3C/svg%3E">
-  <link rel="preload" href="../Font/cuan.woff" as="font" type="font/woff" crossorigin>
+  <link rel="preload" href="../Font/cuan.ttf" as="font" type="font/ttf" crossorigin>
   
   <link rel="stylesheet" href="../css/styles.css">
   
@@ -20,9 +20,14 @@
   
   <header class="navbar" role="banner">
     <nav class="navbar-container" role="navigation" aria-label="主导航">
+      <a href="/" class="navbar-brand" aria-label="图南工作室首页">
+        <span class="navbar-brand-mark">图</span>
+        <span>TunanStudio</span>
+      </a>
       <ul class="navbar-nav">
         <li><a href="/" class="nav-link" data-nav="home" data-i18n="nav.home">首页</a></li>
         <li><a href="/products" class="nav-link active" data-nav="products" data-i18n="nav.products">作品</a></li>
+        <li><a href="/tools" class="nav-link" data-nav="tools" data-i18n="nav.tools">开源工具</a></li>
         <li class="nav-dropdown">
           <a href="/team" class="nav-link nav-dropdown-toggle" data-nav="team" data-i18n="nav.team" aria-expanded="false" aria-haspopup="true">关于我们</a>
           <div class="nav-dropdown-menu" role="menu">
@@ -51,6 +56,7 @@
       <ul class="mobile-nav">
         <li><a href="/" class="mobile-nav-link" data-nav="home" data-i18n="nav.home">首页</a></li>
         <li><a href="/products" class="mobile-nav-link active" data-nav="products" data-i18n="nav.products">作品</a></li>
+        <li><a href="/tools" class="mobile-nav-link" data-nav="tools" data-i18n="nav.tools">开源工具</a></li>
         <li class="mobile-nav-dropdown">
           <a href="/team" class="mobile-nav-link mobile-nav-dropdown-toggle" data-nav="team" data-i18n="nav.team" aria-expanded="false">关于我们</a>
           <ul class="mobile-nav-dropdown-menu" role="menu">
@@ -73,10 +79,13 @@
           <h1 class="page-title" data-i18n="products.title">我们的游戏</h1>
           <p class="page-subtitle" data-i18n="products.subtitle">探索我们精心打造的沉浸式游戏世界</p>
         </header>
-        
+
+        <p class="products-intro" data-i18n="products.intro">每一款作品都源于我们对叙事的一次尝试——将中国传统民俗与当代游戏语言结合，让故事在不同玩家手中生长出独特的轮廓。</p>
+
         <div class="products-grid">
           <article class="product-card" data-animate data-has-hover="false">
             <div class="product-image">
+              <span class="product-image-overlay">已上线</span>
               <a href="https://store.steampowered.com/app/3252050" data-image-link="https://store.steampowered.com/app/3252050" target="_blank" rel="noopener noreferrer" aria-label="查看博物魅影详情">
                 <picture>
                   <source srcset="../img/hero/product-1@3x.webp 3x, ../img/hero/product-1@2x.webp 2x, ../img/hero/product-1.webp" type="image/webp">
@@ -85,6 +94,7 @@
               </a>
             </div>
             <div class="product-info">
+              <span class="product-index">NO. 01 · 2024</span>
               <h2 class="product-title">博物魅影</h2>
               <p class="product-description">2D角色扮演解谜游戏</p>
               <div class="product-tags">
@@ -95,9 +105,10 @@
               </div>
             </div>
           </article>
-          
+
           <article class="product-card" data-animate data-has-hover="true">
             <div class="product-image">
+              <span class="product-image-overlay">已上线</span>
               <a href="https://store.steampowered.com/app/4030660" data-image-link="https://store.steampowered.com/app/4030660" target="_blank" rel="noopener noreferrer" aria-label="查看花城秘事详情">
                 <picture>
                   <source srcset="../img/hero/product-2@3x.webp 3x, ../img/hero/product-2@2x.webp 2x, ../img/hero/product-2.webp" type="image/webp">
@@ -108,6 +119,7 @@
               </a>
             </div>
             <div class="product-info">
+              <span class="product-index">NO. 02 · 2025</span>
               <h2 class="product-title">花城秘事</h2>
               <p class="product-description">2D剧情视觉小说游戏</p>
               <div class="product-tags">
@@ -118,9 +130,10 @@
               </div>
             </div>
           </article>
-          
+
           <article class="product-card" data-animate data-has-hover="true">
             <div class="product-image">
+              <span class="product-image-overlay">已上线</span>
               <a href="https://store.steampowered.com/app/4553080" data-image-link="https://store.steampowered.com/app/4553080" target="_blank" rel="noopener noreferrer" aria-label="查看甲马牌详情">
                 <picture>
                   <source srcset="../img/hero/product-3@3x.webp 3x, ../img/hero/product-3@2x.webp 2x, ../img/hero/product-3.webp" type="image/webp">
@@ -131,6 +144,7 @@
               </a>
             </div>
             <div class="product-info">
+              <span class="product-index">NO. 03 · 2026</span>
               <h2 class="product-title">甲马牌</h2>
               <p class="product-description">2D卡牌肉鸽策略游戏</p>
               <div class="product-tags">
@@ -167,6 +181,7 @@
               <div class="book-spine"></div>
               <div class="book-front">
                 <div class="book-cover">
+                  <img class="book-cover-image" src="../img/novels/novel-1.jpg" alt="博物魅影 封面" loading="lazy" onerror="this.style.display='none'">
                   <div class="book-cover-content">
                     <div class="book-genre" data-i18n="products.novels.items.0.genre">悬疑</div>
                     <h3 class="book-title" data-i18n="products.novels.items.0.title">博物魅影</h3>
@@ -186,11 +201,17 @@
               <div class="book-back">
                 <div class="book-back-content">
                   <div class="book-back-title" data-i18n="products.novels.items.0.title">博物魅影</div>
-                  <p class="book-back-description" data-i18n="products.novels.items.0.description">博物馆中隐藏着千年的秘密，一个神秘的男孩，一系列奇异的事件...</p>
+                  <p class="book-back-description" data-i18n="products.novels.items.0.description">博物馆中隐藏着千年的秘密，一个神秘的男孩，一系列奇异的事件……
+
+命运的齿轮开始转动，希音发现自己被卷入了一场跨越时空的冒险。</p>
                   <div class="book-back-meta">
                     <span class="book-word-count" data-i18n="products.novels.items.0.wordCount">50万字</span>
                     <span class="book-status" data-i18n="products.novels.items.0.status">连载中</span>
                   </div>
+                  <a href="https://weread.qq.com/web/reader/cee32f50813aba6d5g016697" target="_blank" rel="noopener noreferrer" class="book-back-link" aria-label="阅读博物魅影">
+                    <span>前往阅读</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
                 </div>
               </div>
             </div>
@@ -199,56 +220,65 @@
               <div class="book-author-mobile" data-i18n="products.novels.items.0.author">图南工作室</div>
               <p class="book-description-mobile" data-i18n="products.novels.items.0.description">博物馆中隐藏着千年的秘密，一个神秘的男孩，一系列奇异的事件。当命运的齿轮开始转动，希音发现自己被卷入了一场跨越时空的冒险。</p>
               <div class="book-tags-mobile">
-                <span class="book-tag" data-i18n="products.novels.items.0.genre">悬疑</span>
-                <span class="book-tag" data-i18n="products.novels.items.0.wordCount">50万字</span>
-                <span class="book-tag" data-i18n="products.novels.items.0.status">连载中</span>
-              </div>
+              <span class="book-tag" data-i18n="products.novels.items.0.genre">悬疑</span>
+              <span class="book-tag" data-i18n="products.novels.items.0.wordCount">50万字</span>
+              <span class="book-tag" data-i18n="products.novels.items.0.status">连载中</span>
             </div>
-          </article>
+            <a href="https://weread.qq.com/web/reader/cee32f50813aba6d5g016697" target="_blank" rel="noopener noreferrer" class="book-link-mobile">前往阅读 →</a>
+          </div>
+        </article>
 
-          <article class="book-card" data-animate>
-            <div class="book-wrapper">
-              <div class="book-spine"></div>
-              <div class="book-front">
-                <div class="book-cover book-cover-2">
-                  <div class="book-cover-content">
-                    <div class="book-genre" data-i18n="products.novels.items.1.genre">都市</div>
-                    <h3 class="book-title" data-i18n="products.novels.items.1.title">花城秘事</h3>
-                    <div class="book-author" data-i18n="products.novels.items.1.author">图南工作室</div>
-                  </div>
-                  <div class="book-decoration">
-                    <div class="book-decoration-line"></div>
-                    <div class="book-decoration-circle"></div>
-                  </div>
+        <article class="book-card" data-animate>
+          <div class="book-wrapper">
+            <div class="book-spine"></div>
+            <div class="book-front">
+              <div class="book-cover book-cover-2">
+                <img class="book-cover-image" src="../img/novels/novel-1.jpg" alt="花城秘事 封面" loading="lazy" onerror="this.style.display='none'">
+                <div class="book-cover-content">
+                  <div class="book-genre" data-i18n="products.novels.items.1.genre">都市</div>
+                  <h3 class="book-title" data-i18n="products.novels.items.1.title">花城秘事</h3>
+                  <div class="book-author" data-i18n="products.novels.items.1.author">图南工作室</div>
                 </div>
-                <div class="book-pages">
-                  <div class="book-page book-page-1"></div>
-                  <div class="book-page book-page-2"></div>
-                  <div class="book-page book-page-3"></div>
+                <div class="book-decoration">
+                  <div class="book-decoration-line"></div>
+                  <div class="book-decoration-circle"></div>
                 </div>
               </div>
-              <div class="book-back">
-                <div class="book-back-content">
-                  <div class="book-back-title" data-i18n="products.novels.items.1.title">花城秘事</div>
-                  <p class="book-back-description" data-i18n="products.novels.items.1.description">花城深处，隐藏着不为人知的秘密。徐梓卿在失去父亲后，获得了看见另一个世界的能力...</p>
-                  <div class="book-back-meta">
-                    <span class="book-word-count" data-i18n="products.novels.items.1.wordCount">80万字</span>
-                    <span class="book-status" data-i18n="products.novels.items.1.status">连载中</span>
-                  </div>
-                </div>
+              <div class="book-pages">
+                <div class="book-page book-page-1"></div>
+                <div class="book-page book-page-2"></div>
+                <div class="book-page book-page-3"></div>
               </div>
             </div>
-            <div class="book-info-mobile">
-              <h3 class="book-title-mobile" data-i18n="products.novels.items.1.title">花城秘事</h3>
-              <div class="book-author-mobile" data-i18n="products.novels.items.1.author">图南工作室</div>
-              <p class="book-description-mobile" data-i18n="products.novels.items.1.description">花城深处，隐藏着不为人知的秘密。徐梓卿在失去父亲后，获得了看见另一个世界的能力。随着调查的深入，她发现父亲的失踪与这座城市的历史紧密相连。</p>
-              <div class="book-tags-mobile">
-                <span class="book-tag" data-i18n="products.novels.items.1.genre">都市</span>
-                <span class="book-tag" data-i18n="products.novels.items.1.wordCount">80万字</span>
-                <span class="book-tag" data-i18n="products.novels.items.1.status">连载中</span>
+            <div class="book-back">
+              <div class="book-back-content">
+                <div class="book-back-title" data-i18n="products.novels.items.1.title">花城秘事</div>
+                <p class="book-back-description" data-i18n="products.novels.items.1.description">《花城秘事》游戏同名小说
+
+花城少女徐梓卿意外被绑入殡仪馆，侥幸得救后父亲又离奇失踪，在一次奇遇中徐梓卿偶然获得了「开阴眼」的能力，她是否能找出父亲失踪的真相，以及揭开过去沉重的涟漪？</p>
+                <div class="book-back-meta">
+                  <span class="book-word-count" data-i18n="products.novels.items.1.wordCount">80万字</span>
+                  <span class="book-status" data-i18n="products.novels.items.1.status">连载中</span>
+                </div>
+                <a href="https://weread.qq.com/web/reader/cee32f50813aba6d5g016697" target="_blank" rel="noopener noreferrer" class="book-back-link" aria-label="阅读花城秘事">
+                  <span>前往阅读</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
               </div>
             </div>
-          </article>
+          </div>
+          <div class="book-info-mobile">
+            <h3 class="book-title-mobile" data-i18n="products.novels.items.1.title">花城秘事</h3>
+            <div class="book-author-mobile" data-i18n="products.novels.items.1.author">图南工作室</div>
+            <p class="book-description-mobile" data-i18n="products.novels.items.1.description">花城深处，隐藏着不为人知的秘密。徐梓卿在失去父亲后，获得了看见另一个世界的能力。随着调查的深入，她发现父亲的失踪与这座城市的历史紧密相连。</p>
+            <div class="book-tags-mobile">
+              <span class="book-tag" data-i18n="products.novels.items.1.genre">都市</span>
+              <span class="book-tag" data-i18n="products.novels.items.1.wordCount">80万字</span>
+              <span class="book-tag" data-i18n="products.novels.items.1.status">连载中</span>
+            </div>
+            <a href="https://weread.qq.com/web/reader/cee32f50813aba6d5g016697" target="_blank" rel="noopener noreferrer" class="book-link-mobile">前往阅读 →</a>
+          </div>
+        </article>
         </div>
       </div>
     </section>

@@ -73,69 +73,10 @@
   </header>
 
   <main id="main-content" role="main">
-    <section class="hero" id="hero">
-      <div class="hero-bg" id="hero-bg">
-        <div class="hero-video-container" id="hero-video-container">
-          <video 
-            id="hero-video"
-            class="hero-video"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="auto"
-            poster="img/hero/hero-bg.jpg"
-            data-video-config='{
-              "src": "video/hero.mp4",
-              "webmSrc": "video/hero.webm",
-              "poster": "img/hero/hero-bg.jpg",
-              "muted": true,
-              "loop": true,
-              "preload": "auto",
-              "objectFit": "cover",
-              "zIndex": 0,
-              "overlayOpacity": 0.5
-            }'
-          >
-            <source src="video/hero.webm" type="video/webm">
-            <source src="video/hero.mp4" type="video/mp4">
-          </video>
-          <div class="hero-video-fallback" id="hero-video-fallback"></div>
-        </div>
-        <div class="hero-overlay"></div>
-        <div class="floating-images-container" id="floating-images-container"></div>
-      </div>
-      
-      <div class="hero-content">
-        <span class="hero-eyebrow" data-i18n="brand.eyebrow">独立游戏工作室 · 自 2024</span>
-        <h1 class="brand-title">
-          <span class="brand-cn" data-i18n="brand.cn">图南工作室</span>
-          <span class="brand-en" data-i18n="brand.en">Tunan Studio</span>
-        </h1>
-        <p class="brand-tagline" data-i18n="brand.tagline">探索叙事的无限可能</p>
-
-        <div class="hero-actions">
-        </div>
-
-        <div class="hero-meta">
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">基于</span>
-            <span class="hero-meta-value" data-i18n="brand.meta.based">云南 · 中国</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">主题</span>
-            <span class="hero-meta-value" data-i18n="brand.meta.theme">民俗 · 叙事</span>
-          </div>
-          <div class="hero-meta-item">
-            <span class="hero-meta-label">介质</span>
-            <span class="hero-meta-value" data-i18n="brand.meta.medium">游戏 · 小说</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="hero-scroll-indicator">
-        <span class="scroll-text" data-i18n="hero.scroll">向下滚动</span>
-        <span class="scroll-line"></span>
+    <section class="page route-fallback" style="min-height: 60vh; display: flex; align-items: center; justify-content: center;">
+      <div class="container" style="text-align: center; padding: 4rem 1rem;">
+        <p style="font-family: var(--font-en); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-text-mute); margin-bottom: 1rem;">LOADING</p>
+        <p style="font-family: var(--font-display); font-size: 1.25rem; color: var(--color-paper); letter-spacing: 0.02em;">页面跳转中…</p>
       </div>
     </section>
   </main>

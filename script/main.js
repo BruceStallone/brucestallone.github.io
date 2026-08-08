@@ -32,6 +32,8 @@ class App {
       .addRoute('/', () => this.renderHome())
       .addRoute('/products', () => this.renderProducts())
       .addRoute('/product', () => this.renderProducts())
+      .addRoute('/tools', () => this.renderTools())
+      .addRoute('/tool', () => this.renderTools())
       .addRoute('/team', () => this.renderTeam())
       .addRoute('/team/intro', () => this.renderTeam())
       .addRoute('/team/social', () => this.renderTeamSocial())
@@ -295,6 +297,8 @@ class App {
       '/': 'home',
       '/products': 'products',
       '/product': 'products',
+      '/tools': 'tools',
+      '/tool': 'tools',
       '/team': 'team',
       '/team/intro': 'team',
       '/social': 'team',
@@ -502,7 +506,7 @@ class App {
           <source srcset="img/hero/product-${product.id}@3x.webp 3x, img/hero/product-${product.id}@2x.webp 2x, img/hero/product-${product.id}.webp" type="image/webp">
           <source srcset="img/hero/product-${product.id}@3x.jpg 3x, img/hero/product-${product.id}@2x.jpg 2x, img/hero/product-${product.id}.jpg" type="image/jpeg">
           <img class="product-img-default" src="img/hero/product-${product.id}.jpg" alt="${product.title}" loading="lazy">
-          <img class="product-img-hover" src="img/hero/product-${product.id}-hover.webp" alt="${product.title}" loading="lazy">
+          <img class="product-img-hover" src="img/hero/product-${product.id}-hover.webp" alt="${product.title}" loading="lazy" onerror="this.style.display='none'">
         </picture>
       ` : `
         <picture>
@@ -684,6 +688,8 @@ class App {
       'home': '/',
       'products': '/products',
       'product': '/products',
+      'tools': '/tools',
+      'tool': '/tools',
       'team': '/team',
       'team-intro': '/team',
       'team-social': '/team/social',
@@ -843,14 +849,15 @@ class App {
     const products = window.i18n.get('products.games');
     const novels = window.i18n.get('products.novels');
     const sortedProducts = [...products].sort((a, b) => parseInt(b.id) - parseInt(a.id));
-    const productCards = sortedProducts.map(product => {
+    const productCards = sortedProducts.map((product, index) => {
       const hasHoverImage = product.hasHoverImage !== false;
+      const productIndex = `NO. 0${index + 1} · ${new Date().getFullYear() - (sortedProducts.length - 1 - index)}`;
       const imageContent = hasHoverImage ? `
         <picture>
           <source srcset="img/hero/product-${product.id}@3x.webp 3x, img/hero/product-${product.id}@2x.webp 2x, img/hero/product-${product.id}.webp" type="image/webp">
           <source srcset="img/hero/product-${product.id}@3x.jpg 3x, img/hero/product-${product.id}@2x.jpg 2x, img/hero/product-${product.id}.jpg" type="image/jpeg">
           <img class="product-img-default" src="img/hero/product-${product.id}.jpg" alt="${product.title}" loading="lazy">
-          <img class="product-img-hover" src="img/hero/product-${product.id}-hover.webp" alt="${product.title}" loading="lazy">
+          <img class="product-img-hover" src="img/hero/product-${product.id}-hover.webp" alt="${product.title}" loading="lazy" onerror="this.style.display='none'">
         </picture>
       ` : `
         <picture>
@@ -864,11 +871,13 @@ class App {
         </a>
       ` : imageContent;
       return `
-        <article class="product-card" data-animate>
-          <div class="product-image" data-product-id="${product.id}" data-has-hover="${hasHoverImage}">
+        <article class="product-card" data-animate data-has-hover="${hasHoverImage}">
+          <div class="product-image">
+            <span class="product-image-overlay">已上线</span>
             ${imageLink}
           </div>
           <div class="product-info">
+            <span class="product-index">${productIndex}</span>
             <h3 class="product-title">${product.title}</h3>
             <p class="product-description">${product.description}</p>
             <div class="product-tags">
@@ -880,31 +889,62 @@ class App {
     }).join('');
 
     const novelCards = novels.items.map((novel, index) => {
-      const descriptionLines = novel.description.split('\n');
+      const descriptionLines = (novel.description || '').split('\n');
       const descriptionHtml = descriptionLines.map(line => `<p class="book-card-desc-line">${line}</p>`).join('');
-      
       const coverImage = novel.cover || `img/novels/novel-${novel.id}.jpg`;
-      
+      const coverVariant = index % 2 === 1 ? ' book-cover-2' : '';
+      const bookTitleClass = 'book-title';
+      const bookAuthorClass = 'book-author';
+      const mobileDescription = (novel.description || '').replace(/\n/g, ' ');
+      const link = novel.link || '#';
       return `
         <article class="book-card" data-animate>
-          <a href="${novel.link}" target="_blank" rel="noopener noreferrer" class="book-card-link" aria-label="阅读${novel.title}">
-            <div class="book-card-cover">
-              <img src="${coverImage}" alt="${novel.title}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'book-card-cover-placeholder\\'>${novel.title.charAt(0)}</div>'">
+          <div class="book-wrapper">
+            <div class="book-spine"></div>
+            <div class="book-front">
+              <div class="book-cover${coverVariant}">
+                <img class="book-cover-image" src="${coverImage}" alt="${novel.title} 封面" loading="lazy" onerror="this.style.display='none'">
+                <div class="book-cover-content">
+                  <div class="book-genre" data-i18n="products.novels.items.${index}.genre">${novel.genre || ''}</div>
+                  <h3 class="${bookTitleClass}" data-i18n="products.novels.items.${index}.title">${novel.title}</h3>
+                  <div class="${bookAuthorClass}" data-i18n="products.novels.items.${index}.author">${novel.author || '图南工作室'}</div>
+                </div>
+                <div class="book-decoration">
+                  <div class="book-decoration-line"></div>
+                  <div class="book-decoration-circle"></div>
+                </div>
+              </div>
+              <div class="book-pages">
+                <div class="book-page book-page-1"></div>
+                <div class="book-page book-page-2"></div>
+                <div class="book-page book-page-3"></div>
+              </div>
             </div>
-          </a>
-          <div class="book-card-info">
-            <div class="book-card-header">
-              <h3 class="book-card-title" data-i18n="products.novels.items.${index}.title">${novel.title}</h3>
-              <div class="book-card-author" data-i18n="products.novels.items.${index}.author">${novel.author}</div>
+            <div class="book-back">
+              <div class="book-back-content">
+                <div class="book-back-title" data-i18n="products.novels.items.${index}.title">${novel.title}</div>
+                <p class="book-back-description" data-i18n="products.novels.items.${index}.description">${mobileDescription}</p>
+                <div class="book-back-meta">
+                  <span class="book-word-count" data-i18n="products.novels.items.${index}.wordCount">${novel.wordCount || ''}</span>
+                  <span class="book-status" data-i18n="products.novels.items.${index}.status">${novel.status || ''}</span>
+                </div>
+                <a href="${link}" target="_blank" rel="noopener noreferrer" class="book-back-link" aria-label="阅读${novel.title}">
+                  <span>前往阅读</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </div>
             </div>
-            <div class="book-card-description">
-              ${descriptionHtml}
+          </div>
+          <div class="book-info-mobile">
+            <h3 class="book-title-mobile" data-i18n="products.novels.items.${index}.title">${novel.title}</h3>
+            <div class="book-author-mobile" data-i18n="products.novels.items.${index}.author">${novel.author || '图南工作室'}</div>
+            <p class="book-description-mobile" data-i18n="products.novels.items.${index}.description">${mobileDescription}</p>
+            <div class="book-tags-mobile">
+              ${novel.genre ? `<span class="book-tag" data-i18n="products.novels.items.${index}.genre">${novel.genre}</span>` : ''}
+              ${novel.wordCount ? `<span class="book-tag" data-i18n="products.novels.items.${index}.wordCount">${novel.wordCount}</span>` : ''}
+              ${novel.status ? `<span class="book-tag" data-i18n="products.novels.items.${index}.status">${novel.status}</span>` : ''}
             </div>
-            <div class="book-card-meta">
-              <span class="book-card-genre" data-i18n="products.novels.items.${index}.genre">${novel.genre}</span>
-              <span class="book-card-status" data-i18n="products.novels.items.${index}.status">${novel.status}</span>
-              <span class="book-card-word-count" data-i18n="products.novels.items.${index}.wordCount">${novel.wordCount}</span>
-            </div>
+            ${novel.link ? `<a href="${novel.link}" target="_blank" rel="noopener noreferrer" class="book-link-mobile">前往阅读 →</a>` : ''}
           </div>
         </article>
       `;
@@ -917,6 +957,7 @@ class App {
             <h1 class="page-title" data-i18n="products.title">${window.i18n.get('products.title')}</h1>
             <p class="page-subtitle" data-i18n="products.subtitle">${window.i18n.get('products.subtitle')}</p>
           </header>
+          <p class="products-intro" data-i18n="products.intro">${window.i18n.get('products.intro') || ''}</p>
           <div class="products-grid">
             ${productCards}
           </div>
@@ -934,11 +975,11 @@ class App {
 
       <section class="page novels-page">
         <div class="container">
-          <header class="page-header">
+          <header class="page-header" data-animate>
             <h2 class="page-title" data-i18n="products.novels.title">${novels.title}</h2>
             <p class="page-subtitle" data-i18n="products.novels.subtitle">${novels.subtitle}</p>
           </header>
-          
+
           <div class="novels-grid">
             ${novelCards}
           </div>
@@ -1090,6 +1131,194 @@ class App {
 
   attachProductsEvents() {
     this.initScrollIndicator();
+  }
+
+  renderTools() {
+    const content = document.getElementById('main-content');
+    if (content) {
+      content.innerHTML = this.getToolsTemplate();
+      this.attachToolsEvents();
+    }
+  }
+
+  getToolsTemplate() {
+    const t = window.i18n.get('tools') || {};
+    const items = t.items || [];
+    const mzItems = items.filter(it => it.section === 'mz');
+    const godotItems = items.filter(it => it.section === 'godot');
+    const actions = t.actions || {};
+
+    const escapeHtml = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+    const renderTag = (tag) => `<span class="tool-tag">${escapeHtml(tag)}</span>`;
+
+    const renderDownloadCard = (item) => {
+      const tags = (item.tags || []).map(renderTag).join('');
+      const name = escapeHtml(item.name);
+      const nameEn = escapeHtml(item.nameEn || '');
+      const desc = escapeHtml(item.description);
+      const file = escapeHtml(item.file);
+      const size = escapeHtml(item.fileSize);
+      const downloadLabel = escapeHtml(actions.download || '下载 .js');
+      return `
+        <article class="tool-card" data-animate data-kind="download">
+          <div class="tool-card-top">
+            <span class="tool-index">NO. ${escapeHtml(item.id)}</span>
+            <span class="tool-filetype">${escapeHtml(item.fileType || '.js')}</span>
+          </div>
+          <h3 class="tool-name">
+            <span class="tool-name-cn">${name}</span>
+            <span class="tool-name-en">${nameEn}</span>
+          </h3>
+          <p class="tool-description">${desc}</p>
+          <div class="tool-tags">${tags}</div>
+          <div class="tool-card-bottom">
+            <div class="tool-meta">
+              <span class="tool-meta-item"><span class="tool-meta-label">${escapeHtml(actions.size || '大小')}</span><span class="tool-meta-value">${size}</span></span>
+            </div>
+            <a class="tool-action tool-action-download" href="${file}" download aria-label="${downloadLabel}">
+              <span>${downloadLabel}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 4V16M12 16L7 11M12 16L17 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 20H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </article>
+      `;
+    };
+
+    const renderOnlineCard = (item) => {
+      const tags = (item.tags || []).map(renderTag).join('');
+      const name = escapeHtml(item.name);
+      const nameEn = escapeHtml(item.nameEn || '');
+      const desc = escapeHtml(item.description);
+      const file = escapeHtml(item.file);
+      const size = escapeHtml(item.fileSize);
+      const openLabel = escapeHtml(actions.openOnline || '立即打开');
+      const liveLabel = escapeHtml(actions.live || '在线');
+      const newTabLabel = escapeHtml(actions.openNewTab || '新标签页打开');
+      // Snapshot of the Godot Tween tool — a stylised browser window so the user
+      // gets a sense of what the live tool looks like before clicking through.
+      return `
+        <article class="tool-card tool-card-featured" data-animate data-kind="online">
+          <div class="tool-featured-grid">
+            <div class="tool-featured-left">
+              <div class="tool-card-top">
+                <span class="tool-index">NO. ${escapeHtml(item.id)}</span>
+                <span class="tool-filetype">${escapeHtml(item.fileType || '.html')}</span>
+                <span class="tool-live" aria-label="${liveLabel}"><span class="tool-live-dot" aria-hidden="true"></span>${liveLabel}</span>
+              </div>
+              <h3 class="tool-name">
+                <span class="tool-name-cn">${name}</span>
+                <span class="tool-name-en">${nameEn}</span>
+              </h3>
+              <p class="tool-description">${desc}</p>
+              <div class="tool-tags">${tags}</div>
+              <div class="tool-card-bottom">
+                <div class="tool-meta">
+                  <span class="tool-meta-item"><span class="tool-meta-label">${escapeHtml(actions.size || '大小')}</span><span class="tool-meta-value">${size}</span></span>
+                </div>
+                <a class="tool-action tool-action-open" href="${file}" target="_blank" rel="noopener noreferrer" aria-label="${openLabel}（${newTabLabel}）">
+                  <span>${openLabel}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </div>
+            </div>
+            <div class="tool-featured-right" aria-hidden="true">
+              <div class="tool-snapshot">
+                <div class="tool-snapshot-bar">
+                  <span class="tool-snapshot-dot tool-snapshot-dot-r"></span>
+                  <span class="tool-snapshot-dot tool-snapshot-dot-y"></span>
+                  <span class="tool-snapshot-dot tool-snapshot-dot-g"></span>
+                  <span class="tool-snapshot-url">godot-tween-curves</span>
+                </div>
+                <div class="tool-snapshot-body">
+                  <div class="tool-snapshot-title">Tween 动画手册</div>
+                  <div class="tool-snapshot-sub">12 × 4 曲线</div>
+                  <div class="tool-snapshot-row">
+                    <span class="tool-snapshot-chip">TRANS_LINEAR</span>
+                    <span class="tool-snapshot-chip tool-snapshot-chip-accent">EASE_IN_OUT</span>
+                  </div>
+                  <div class="tool-snapshot-canvas">
+                    <svg viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true">
+                      <defs>
+                        <linearGradient id="snapStroke" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stop-color="#C9A86A" stop-opacity="0.3"/>
+                          <stop offset="100%" stop-color="#C9A86A" stop-opacity="1"/>
+                        </linearGradient>
+                      </defs>
+                      <line x1="0" y1="78" x2="200" y2="78" stroke="rgba(232,227,214,0.1)" stroke-width="0.5"/>
+                      <line x1="0" y1="2"  x2="200" y2="2"  stroke="rgba(232,227,214,0.05)" stroke-width="0.5"/>
+                      <path d="M0,78 C50,78 80,40 110,30 C140,22 170,18 200,15" fill="none" stroke="url(#snapStroke)" stroke-width="1.4" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div class="tool-snapshot-mini">
+                    <span class="tool-snapshot-mini-bar" style="--h:18%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:42%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:72%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:90%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:78%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:96%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:64%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:36%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:30%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:52%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:80%"></span>
+                    <span class="tool-snapshot-mini-bar" style="--h:88%"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    };
+
+    const mzSection = t.sections && t.sections.mz ? t.sections.mz : { label: 'RPG MAKER MZ', title: '', subtitle: '' };
+    const godotSection = t.sections && t.sections.godot ? t.sections.godot : { label: 'GODOT', title: '', subtitle: '' };
+
+    return `
+      <section class="page tools-page">
+        <div class="container">
+          <header class="page-header tools-page-header" data-animate>
+            <span class="page-eyebrow" data-i18n="tools.eyebrow">${escapeHtml(t.eyebrow || '工坊 · WORKBENCH')}</span>
+            <h1 class="page-title" data-i18n="tools.title">${escapeHtml(t.title || '开源工具')}</h1>
+            <p class="page-subtitle" data-i18n="tools.subtitle">${escapeHtml(t.subtitle || '')}</p>
+            <div class="tools-notice" role="note" aria-label="License notice">
+              <span class="tools-notice-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V11C4 16 7.5 20.5 12 22C16.5 20.5 20 16 20 11V6L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="tools-notice-text" data-i18n="tools.notice">${escapeHtml(t.notice || '免费用于商业 / 非商业用途；保留原作者信息即可～')}</span>
+            </div>
+          </header>
+
+          <section class="tools-section" data-animate>
+            <div class="tools-section-header">
+              <span class="tools-section-label">${escapeHtml(mzSection.label)}</span>
+              <h2 class="tools-section-title">${escapeHtml(mzSection.title)}</h2>
+              <p class="tools-section-subtitle">${escapeHtml(mzSection.subtitle)}</p>
+            </div>
+            <div class="tools-grid">
+              ${mzItems.map(renderDownloadCard).join('')}
+            </div>
+          </section>
+
+          <section class="tools-section" data-animate>
+            <div class="tools-section-header">
+              <span class="tools-section-label">${escapeHtml(godotSection.label)}</span>
+              <h2 class="tools-section-title">${escapeHtml(godotSection.title)}</h2>
+              <p class="tools-section-subtitle">${escapeHtml(godotSection.subtitle)}</p>
+            </div>
+            <div class="tools-grid tools-grid-single">
+              ${godotItems.map(renderOnlineCard).join('')}
+            </div>
+          </section>
+        </div>
+      </section>
+    `;
+  }
+
+  attachToolsEvents() {
   }
 
   initScrollIndicator() {

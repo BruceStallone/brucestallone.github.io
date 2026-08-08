@@ -9,11 +9,11 @@ const __dirname = path.dirname(__filename);
 const PORT = 3000;
 
 const mimeTypes = {
-    '.html': 'text/html',
-    '.js': 'text/javascript',
-    '.mjs': 'text/javascript',
-    '.css': 'text/css',
-    '.json': 'application/json',
+    '.html': 'text/html; charset=utf-8',
+    '.js': 'text/javascript; charset=utf-8',
+    '.mjs': 'text/javascript; charset=utf-8',
+    '.css': 'text/css; charset=utf-8',
+    '.json': 'application/json; charset=utf-8',
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
     '.webp': 'image/webp',
@@ -34,9 +34,9 @@ const server = http.createServer((req, res) => {
 
     fs.readFile(filePath, (err, content) => {
         if (err) {
-            if (err.code === 'ENOENT') {
+            if (err.code === 'ENOENT' || err.code === 'EISDIR') {
                 fs.readFile(path.join(__dirname, 'index.html'), (err, content) => {
-                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
                     res.end(content, 'utf-8');
                 });
             } else {

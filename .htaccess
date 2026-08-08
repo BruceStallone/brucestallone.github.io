@@ -12,3 +12,13 @@ AddType image/svg+xml svg
     Header set Cache-Control "max-age=31536000, public"
   </FilesMatch>
 </IfModule>
+
+# SPA fallback - serve index.html for any non-existing path
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/Tools/
+  RewriteRule ^.*$ /index.html [L]
+</IfModule>

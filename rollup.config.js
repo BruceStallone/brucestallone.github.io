@@ -34,7 +34,9 @@ export default {
         { src: 'Text/*', dest: 'dist/Text' },
         { src: 'css/*', dest: 'dist/css' },
         { src: 'img/**/*', dest: 'dist/img' },
+        { src: 'Tools/*', dest: 'dist/Tools' },
         { src: 'index.html', dest: 'dist' },
+        { src: '404.html', dest: 'dist' },
         { src: 'page/*', dest: 'dist/page' }
       ],
       hook: 'writeBundle'

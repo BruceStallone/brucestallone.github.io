@@ -22,9 +22,7 @@
     }
   },
   "tools": {
-    "eyebrow": "WORKBENCH",
     "title": "Open Source Tools",
-    "subtitle": "Hand-crafted utilities from our game dev journey — all free.",
     "notice": "Free for commercial and non-commercial use. Just keep the credit line.",
     "sections": {
       "mz": {

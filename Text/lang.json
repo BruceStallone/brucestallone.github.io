@@ -22,9 +22,7 @@
     }
   },
   "tools": {
-    "eyebrow": "工坊 · WORKBENCH",
     "title": "开源工具",
-    "subtitle": "做游戏过程攒下来的小工具，统统免费～",
     "notice": "免费用于商业 / 非商业用途；保留原作者信息即可～",
     "sections": {
       "mz": {

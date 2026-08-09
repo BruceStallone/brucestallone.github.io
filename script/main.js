@@ -1281,9 +1281,7 @@ class App {
       <section class="page tools-page">
         <div class="container">
           <header class="page-header tools-page-header" data-animate>
-            <span class="page-eyebrow" data-i18n="tools.eyebrow">${escapeHtml(t.eyebrow || '工坊 · WORKBENCH')}</span>
             <h1 class="page-title" data-i18n="tools.title">${escapeHtml(t.title || '开源工具')}</h1>
-            <p class="page-subtitle" data-i18n="tools.subtitle">${escapeHtml(t.subtitle || '')}</p>
             <div class="tools-notice" role="note" aria-label="License notice">
               <span class="tools-notice-icon" aria-hidden="true">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6V11C4 16 7.5 20.5 12 22C16.5 20.5 20 16 20 11V6L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>

@@ -214,8 +214,8 @@
         <option value="outin">EASE_OUT_IN (缓出缓入)</option>
       </select>
     </div>
-    <div style="display: flex; align-items: flex-end; gap: 12px;">
-      <div style="flex: 1; min-width: 180px;">
+    <div style="display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap;">
+      <div style="flex: 1 1 180px; min-width: 180px;">
         <label style="display: block; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px;">动画时长: <strong id="durationLabel">2.0</strong> 秒</label>
         <div style="display: flex; align-items: center; gap: 8px;">
           <input type="range" id="durationSlider" min="0.5" max="9" step="0.1" value="2"
@@ -227,6 +227,7 @@
         <select id="motionSelect" style="min-width: 110px;">
           <option value="horizontal" selected>水平 →</option>
           <option value="vertical">竖直 ↓</option>
+          <option value="radial">圆形缩放</option>
         </select>
       </div>
       <button id="playBtn" style="padding: 6px 20px; white-space: nowrap;">播放动画</button>
@@ -282,7 +283,11 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
+  // 重设 canvas.width 会清空画布，所以 resize 后必须重绘，否则首屏 / 缩放窗口会一片空白
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    drawMain();
+  });
 
   const transitions = ['linear','sine','quad','cubic','quart','quint','expo','circ','back','elastic','bounce','spring'];
   const eases = ['in','out','inout','outin'];
@@ -559,6 +564,71 @@ spring: {
     }
   }
 
+  const MONO_FONT = '"JetBrains Mono", "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace';
+
+  // 圆形缩放：圆环半径 = 缓动值，虚线环标出 value 1.0 的基准。
+  // 缓动值越过 1（BACK / ELASTIC / SPRING 的 overshoot）时圆环涨出虚线基准环；
+  // 掉到 0 以下（ELASTIC 缓入最深 -0.37）则收成中心的朱砂虚线环。
+  // 时间进度统一交给下方进度条表达，圆环上不再重复画参照弧。
+  function drawOrb(progress, trans, ease, color, cx, cy, targetR, maxR) {
+    const f = getEaseFunc(trans, ease);
+    const v = f(progress);
+
+    // value 1.0 基准环
+    ctx.strokeStyle = 'rgba(232,227,214,0.16)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 5]);
+    ctx.beginPath(); ctx.arc(cx, cy, targetR, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 负值下冲：ELASTIC 缓入最深（谷值 -0.37），其次 SPRING（-0.16）、BACK（-0.10）
+    if (v < -0.004) {
+      ctx.strokeStyle = 'rgba(201,85,74,0.7)';
+      ctx.setLineDash([2, 3]);
+      ctx.beginPath(); ctx.arc(cx, cy, targetR * Math.abs(v), 0, Math.PI * 2); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    const r = Math.max(0, Math.min(maxR, targetR * v));
+
+    // 缩放中的圆
+    if (r > 0.3) {
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+
+      // 缩放前沿环：让「当前半径」一眼可读
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = 0.6;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // 高光
+      ctx.fillStyle = 'rgba(255,255,255,0.32)';
+      ctx.beginPath(); ctx.arc(cx - r * 0.3, cy - r * 0.3, Math.max(1, r * 0.2), 0, Math.PI * 2); ctx.fill();
+    }
+
+    // 0 / 1 刻度：与水平、竖直模式共用同一套标注语言
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = r > 6 ? 'rgba(14,14,16,0.6)' : 'rgba(232,227,214,0.4)';
+    ctx.fillText('0', cx, cy + 3);
+    ctx.fillStyle = 'rgba(232,227,214,0.4)';
+    ctx.fillText('1', cx, cy - targetR - 6);
+
+    // 实时缓动值：overshoot / undershoot 时能直接读到 1.0 以外的数字
+    // 11px 等宽字体按 0.6em（6.6px）估算字宽，窄屏放不下时整条省略而不是被裁掉
+    const readout = 'value ' + v.toFixed(2);
+    if (cx + targetR + 8 + readout.length * 6.6 + 6 < W) {
+      ctx.textAlign = 'left';
+      ctx.font = '11px ' + MONO_FONT;
+      ctx.fillStyle = (v < -0.004 || v > 1.004) ? 'rgba(201,85,74,0.9)' : 'rgba(232,227,214,0.5)';
+      ctx.fillText(readout, cx + targetR + 8, cy - 2);
+    }
+    ctx.textAlign = 'left';
+    ctx.font = '12px sans-serif';
+  }
+
   function drawMain() {
     const trans = document.getElementById('transSelect').value;
     const ease = document.getElementById('easeSelect').value;
@@ -595,7 +665,7 @@ spring: {
 
     // Animation track on right
     // 两端各留 ~20% padding 给 overshoot 留缓冲；drawBall 内部还有 canvas 边界兜底
-    const trackAreaX1 = marginLeft + gw + 60;
+    const trackAreaX1 = marginLeft + gw + (W < 560 ? 24 : 60);
     const trackAreaX2 = W - 40;
     const trackAreaW = trackAreaX2 - trackAreaX1;
     const trackPad = Math.min(60, Math.max(15, trackAreaW * 0.2));
@@ -604,9 +674,18 @@ spring: {
     const trackY = marginTop + gh / 2;
     const motion = document.getElementById('motionSelect').value;
 
-    // 根据运动方向计算轨道端点（drawBall 通过 startX===endX 判断方向）
+    // 圆形缩放：圆心固定在轨道区中央，半径上限给 overshoot 预留余量
     let trackStartX, trackStartY, trackEndX, trackEndY;
-    if (motion === 'vertical') {
+    let cx = 0, cy = 0, targetR = 0, maxR = 0;
+    if (motion === 'radial') {
+      const bandTop = marginTop + 4;          // 让开「动画演示」标题
+      const bandBottom = marginTop + gh + 16; // 给进度条留出空间
+      cx = (trackX1 + trackX2) / 2;
+      cy = (bandTop + bandBottom) / 2;
+      maxR = Math.max(16, Math.min((bandBottom - bandTop) / 2, trackAreaW / 2 - 6));
+      // 1.4 倍余量：覆盖 48 条曲线的真实极值（elastic/out 峰值 1.3731），保证圆环永不被削平
+      targetR = maxR / 1.4;
+    } else if (motion === 'vertical') {
       trackStartX = (trackX1 + trackX2) / 2;
       trackStartY = marginTop;
       trackEndX = trackStartX;
@@ -621,20 +700,32 @@ spring: {
     ctx.fillStyle = 'rgba(232,227,214,0.5)';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('动画演示', trackAreaX1, marginTop - 6);
+    // 窄屏逐级缩短，否则尾部会被画布右缘裁掉
+    const demoLabel = motion === 'radial'
+      ? (W < 420 ? '半径 = 缓动值' : W < 560 ? '动画演示 · 半径=缓动值' : '动画演示 · 圆环半径 = 缓动值')
+      : '动画演示';
+    ctx.fillText(demoLabel, trackAreaX1, marginTop - 6);
 
-    drawBall(progress, trans, ease, info.color, trackStartX, trackStartY, trackEndX, trackEndY);
+    if (motion === 'radial') {
+      drawOrb(progress, trans, ease, info.color, cx, cy, targetR, maxR);
+    } else {
+      drawBall(progress, trans, ease, info.color, trackStartX, trackStartY, trackEndX, trackEndY);
+    }
 
-    // Progress bar under track（位置随方向略调，竖直时挪到轨道下方避免重叠）
-    const pbY = motion === 'vertical' ? marginTop + gh + 30 : trackY + 45;
+    // Progress bar（竖直时挪到轨道下方避免重叠；圆形模式与圆环同宽居中）
+    const pbY = motion === 'radial' ? marginTop + gh + 34
+      : motion === 'vertical' ? marginTop + gh + 30
+      : trackY + 45;
+    const pbX1 = motion === 'radial' ? cx - targetR : trackX1;
+    const pbX2 = motion === 'radial' ? cx + targetR : trackX2;
     ctx.fillStyle = 'rgba(232,227,214,0.08)';
-    ctx.fillRect(trackX1, pbY, trackX2 - trackX1, 6);
+    ctx.fillRect(pbX1, pbY, pbX2 - pbX1, 6);
     ctx.fillStyle = info.color;
-    ctx.fillRect(trackX1, pbY, (trackX2 - trackX1) * progress, 6);
+    ctx.fillRect(pbX1, pbY, (pbX2 - pbX1) * progress, 6);
     ctx.fillStyle = 'rgba(232,227,214,0.4)';
     ctx.font = '11px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText((progress * 100).toFixed(0) + '%', trackX1 + (trackX2 - trackX1) * progress, pbY + 20);
+    ctx.fillText((progress * 100).toFixed(0) + '%', pbX1 + (pbX2 - pbX1) * progress, pbY + 20);
 
     if (isPlaying && progress < 1) {
       requestAnimationFrame(drawMain);

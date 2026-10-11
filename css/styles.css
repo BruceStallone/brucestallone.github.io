@@ -1333,32 +1333,6 @@ ul, ol {
   display: block;
 }
 
-.product-image-overlay {
-  position: absolute;
-  top: var(--spacing-md);
-  left: var(--spacing-md);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  background: rgba(14, 14, 16, 0.85);
-  border: 1px solid var(--color-line);
-  font-family: var(--font-en);
-  font-size: 10px;
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-paper);
-  backdrop-filter: blur(4px);
-}
-
-.product-image-overlay::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  background: var(--color-accent);
-  border-radius: 50%;
-}
-
 .product-info {
   padding: var(--spacing-xl);
   flex: 1;
@@ -2235,13 +2209,13 @@ body.mobile-menu-open .scroll-indicator {
 .book-spread__scrim {
   position: absolute;
   inset: 0;
-  background: rgba(6, 6, 9, 0.82);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
+  /* 这里刻意不用 backdrop-filter：整屏模糊会在动画的每一帧重新合成一次全屏
+     纹理，是翻书动画掉帧的主要来源。改用略深一点的纯色遮罩，观感几乎一致。 */
+  background: rgba(6, 6, 9, 0.88);
   opacity: 0;
   border: none;
   cursor: pointer;
-  transition: opacity 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .book-spread[data-open="true"] .book-spread__scrim {
@@ -2253,8 +2227,7 @@ body.mobile-menu-open .scroll-indicator {
   width: min(1000px, 88vw, 123vh);
   aspect-ratio: 4 / 3;
   transform-origin: 0 0;
-  transition: transform 380ms cubic-bezier(0.2, 0.7, 0.2, 1);
-  will-change: transform;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .book-spread__book {
@@ -2265,7 +2238,10 @@ body.mobile-menu-open .scroll-indicator {
   transform-style: preserve-3d;
 }
 
-/* 摊开后落在左半页的前封面（绕书脊旋转） */
+/* 封面从右半页平移到左半页。
+   这里刻意不做 180° 的 3D 翻转：封面绕书脊转过半圈时会先压成零宽、
+   再以镜像姿态弹回左半页，视觉上就是一次突兀的「变过去又变回来」。
+   纯位移没有这个问题，也不需要背面那张同图来兜底。 */
 .book-leaf {
   position: absolute;
   top: 0;
@@ -2274,12 +2250,12 @@ body.mobile-menu-open .scroll-indicator {
   height: 100%;
   transform-origin: left center;
   transform-style: preserve-3d;
-  transform: rotateY(var(--spread-tilt));
-  transition: transform 520ms cubic-bezier(0.16, 0.84, 0.24, 1) 100ms;
+  transform: translate3d(0, 0, 0) rotateY(var(--spread-tilt));
+  transition: transform 440ms cubic-bezier(0.22, 1, 0.36, 1) 40ms;
 }
 
 .book-spread[data-open="true"] .book-leaf {
-  transform: rotateY(-178deg);
+  transform: translate3d(-100%, 0, 0) rotateY(0deg);
 }
 
 .book-leaf__face {
@@ -2292,24 +2268,20 @@ body.mobile-menu-open .scroll-indicator {
 }
 
 .book-leaf__face--front {
-  border-radius: 2px 5px 5px 2px;
+  border-radius: 4px;
   background: linear-gradient(135deg, #221D18 0%, #2E251E 52%, #1B1713 100%);
 }
 
+/* 四周对称压边：封面在左右半页之间移动时观感一致，
+   真正的书脊阴影交给 .book-spread__gutter 去做 */
 .book-leaf__face--front::after {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.05) 14%, transparent 42%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.03) 15%, transparent 42%, transparent 58%, rgba(0, 0, 0, 0.03) 85%, rgba(0, 0, 0, 0.3) 100%),
     linear-gradient(180deg, rgba(14, 14, 16, 0.15) 0%, transparent 45%, rgba(14, 14, 16, 0.7) 100%);
   pointer-events: none;
-}
-
-.book-leaf__face--back {
-  transform: rotateY(180deg);
-  border-radius: 5px 2px 2px 5px;
-  background: linear-gradient(120deg, #E9E3D3 0%, #D9D2BE 100%);
 }
 
 .book-leaf__image {
@@ -2318,68 +2290,6 @@ body.mobile-menu-open .scroll-indicator {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.book-leaf__colophon {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  height: 100%;
-  padding: clamp(1rem, 3.4vw, 2.5rem);
-  color: var(--color-ink);
-}
-
-.book-leaf__colophon-title {
-  font-family: var(--font-display);
-  font-size: clamp(1rem, 2.4vw, 1.6rem);
-  letter-spacing: 0.06em;
-  color: #2A2018;
-}
-
-.book-leaf__colophon-line {
-  width: 34px;
-  height: 1px;
-  margin: 6px 0 10px;
-  background: rgba(42, 32, 24, 0.4);
-}
-
-.book-leaf__facts {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 0;
-}
-
-.book-leaf__fact {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  font-size: clamp(0.7rem, 1.3vw, 0.84rem);
-  line-height: 1.7;
-}
-
-.book-leaf__fact dt {
-  color: rgba(30, 26, 22, 0.6);
-  letter-spacing: var(--tracking-wide);
-}
-
-.book-leaf__fact dd {
-  margin: 0;
-  text-align: right;
-  color: rgba(30, 26, 22, 0.86);
-}
-
-.book-leaf__stamp {
-  margin-top: auto;
-  align-self: flex-start;
-  padding: 5px 10px;
-  font-size: clamp(0.62rem, 1.1vw, 0.75rem);
-  letter-spacing: var(--tracking-wider);
-  color: #F3EDE2;
-  background: var(--color-accent);
-  border-radius: var(--radius-xs);
 }
 
 /* 书页 */
@@ -2392,10 +2302,19 @@ body.mobile-menu-open .scroll-indicator {
   color: var(--color-ink);
 }
 
+/* 闭合状态必须隐藏：这是一整块米白底，一旦露出来就会在书本左侧拖出一条
+   突兀的白色矩形，收拢时它甚至会伸到卡面书本的左边外面 */
 .book-page--left {
   left: 0;
   border-radius: 5px 0 0 5px;
   box-shadow: inset -26px 0 34px -30px rgba(43, 32, 22, 0.55);
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+.book-spread[data-open="true"] .book-page--left {
+  opacity: 1;
+  transition: opacity 200ms ease 110ms;
 }
 
 .book-page--right {
@@ -2422,7 +2341,7 @@ body.mobile-menu-open .scroll-indicator {
       transparent 100%);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 320ms ease 260ms;
+  transition: opacity 280ms ease 150ms;
 }
 
 .book-spread[data-open="true"] .book-spread__gutter {
@@ -2438,7 +2357,7 @@ body.mobile-menu-open .scroll-indicator {
   padding: clamp(1.1rem, 3.6vw, 2.75rem) clamp(1.1rem, 3.8vw, 3rem);
   opacity: 0;
   transform: translate3d(-8px, 6px, 0);
-  transition: opacity 340ms ease 300ms, transform 420ms cubic-bezier(0.22, 1, 0.36, 1) 300ms;
+  transition: opacity 300ms ease 170ms, transform 340ms cubic-bezier(0.22, 1, 0.36, 1) 170ms;
 }
 
 .book-spread[data-open="true"] .book-page--right .book-page__inner {
@@ -2597,15 +2516,32 @@ body.mobile-menu-open .scroll-indicator {
   transform: rotate(90deg);
 }
 
-.book-spread[data-ending="true"] .book-leaf,
+/* 合上：书页内容与书脊阴影先撤，书体继续合拢，两段动作刻意重叠 */
+.book-spread[data-ending="true"] .book-leaf {
+  transition-duration: 240ms;
+  transition-delay: 0ms;
+}
+
 .book-spread[data-ending="true"] .book-page__inner,
-.book-spread[data-ending="true"] .book-spread__gutter {
-  transition-duration: 260ms;
+.book-spread[data-ending="true"] .book-spread__gutter,
+.book-spread[data-ending="true"] .book-page--left {
+  transition-duration: 160ms;
   transition-delay: 0ms;
 }
 
 .book-spread[data-ending="true"] .book-spread__scrim {
-  transition-duration: 220ms;
+  transition-duration: 200ms;
+}
+
+/* 仅在开合动画进行期间提层，结束后立刻释放，避免长期占用显存 */
+.book-spread[data-animating="true"] .book-spread__frame,
+.book-spread[data-animating="true"] .book-spread__scrim,
+.book-spread[data-animating="true"] .book-leaf,
+.book-spread[data-animating="true"] .book-page__inner,
+.book-spread[data-animating="true"] .book-page--left,
+.book-spread[data-animating="true"] .book-spread__gutter,
+.book-spread[data-animating="true"] .book-spread__close {
+  will-change: transform, opacity;
 }
 
 /* 矮屏（横屏手机）下压缩书页留白，优先保证正文可读 */
@@ -2643,7 +2579,7 @@ body.has-book-spread {
     transform-origin: center;
     opacity: 0;
     transform: translate3d(0, 28px, 0) scale(0.985);
-    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 260ms ease;
+    transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
   }
 
   .book-spread[data-open="true"] .book-spread__frame {
@@ -2654,7 +2590,7 @@ body.has-book-spread {
   .book-spread[data-open="false"] .book-spread__frame {
     opacity: 0;
     transform: translate3d(0, 28px, 0) scale(0.985);
-    transition-duration: 300ms, 220ms;
+    transition-duration: 260ms, 180ms;
   }
 
   .book-spread__book {
@@ -2692,11 +2628,6 @@ body.has-book-spread {
 
   .book-spread[data-open="true"] .book-leaf {
     transform: none;
-  }
-
-  .book-leaf__face--back,
-  .book-leaf__stamp {
-    display: none;
   }
 
   .book-spread__close {
@@ -2748,6 +2679,7 @@ body.has-book-spread {
   .book__image,
   .book-leaf,
   .book-page__inner,
+  .book-page--left,
   .book-spread__frame,
   .book-spread__scrim,
   .book-spread__gutter {

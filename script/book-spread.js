@@ -1,10 +1,11 @@
 const SHEET_QUERY = '(max-width: 760px)';
 const REDUCED_QUERY = '(prefers-reduced-motion: reduce)';
 
+// 与 css/styles.css 里书本浮层的过渡时长保持一致，避免 JS 与 CSS 各自计时产生错位
 const DURATION = {
-  fly: 380,
-  endLeaf: 260,
-  endFly: 280
+  settle: 480,  // 书页完全摊开（含 CSS 里的 transition-delay）
+  endLeaf: 140, // 合上后停多久开始飞回；与合书动作重叠，避免分段等待的顿挫
+  endFly: 300   // 浮层飞回卡面书本
 };
 
 function escapeHtml(value) {
@@ -44,18 +45,6 @@ const SPREAD_SKELETON = `
         <div class="book-leaf__face book-leaf__face--front">
           <img class="book-leaf__image" data-slot="cover" alt="" loading="lazy">
         </div>
-        <div class="book-leaf__face book-leaf__face--back">
-          <div class="book-leaf__colophon">
-            <div class="book-leaf__colophon-title" data-slot="coverTitle2"></div>
-            <div class="book-leaf__colophon-line" aria-hidden="true"></div>
-            <dl class="book-leaf__facts">
-              <div class="book-leaf__fact" data-slot="rowAuthor"><dt data-slot="authorLabel"></dt><dd data-slot="authorValue"></dd></div>
-              <div class="book-leaf__fact" data-slot="rowWords"><dt data-slot="wordsLabel"></dt><dd data-slot="wordsValue"></dd></div>
-              <div class="book-leaf__fact" data-slot="rowPlatform"><dt data-slot="platformLabel"></dt><dd data-slot="platformValue"></dd></div>
-            </dl>
-            <span class="book-leaf__stamp" data-slot="stamp"></span>
-          </div>
-        </div>
       </div>
       <div class="book-spread__gutter" aria-hidden="true"></div>
       <button class="book-spread__close" type="button" data-book-close>
@@ -73,6 +62,11 @@ class BookSpread {
     this._source = null;
     this._timer = null;
     this._settleTimer = null;
+    this._animTimer = null;
+    this._releaseTimer = null;
+    this._release = null;
+    this._openRaf = 0;
+    this._shiftX = 0;
     this._hidden = [];
     this._onKeydown = (event) => this._handleKeydown(event);
   }
@@ -126,14 +120,6 @@ class BookSpread {
     return this.el.querySelector(`[data-slot="${name}"]`);
   }
 
-  _setFact(rowSlot, labelSlot, valueSlot, label, value) {
-    const row = this._slot(rowSlot);
-    if (!row) return;
-    row.hidden = !value;
-    this._slot(labelSlot).textContent = value ? label : '';
-    this._slot(valueSlot).textContent = value || '';
-  }
-
   _fill(index) {
     const novel = this._novels()[index];
     if (!novel) return false;
@@ -148,11 +134,11 @@ class BookSpread {
     this._slot('byline').textContent = author;
     this._slot('description').textContent = novel.description || '';
 
+    // 封面只在正面出现一次：书页不再做 180° 翻转，背面无从得见
     const cover = this._slot('cover');
     cover.src = novel.cover || '';
     cover.alt = `${title} 封面`;
     cover.style.display = novel.cover ? '' : 'none';
-    this._slot('coverTitle2').textContent = title;
 
     const tags = Array.isArray(novel.tags) ? novel.tags.filter(Boolean) : [];
     const tagList = this._slot('tags');
@@ -171,11 +157,6 @@ class BookSpread {
     this._slot('ctaLabel').textContent = ui.read || '前往阅读';
     this._slot('note').textContent = novel.status || '';
 
-    this._setFact('rowAuthor', 'authorLabel', 'authorValue', ui.author || '作者', author);
-    this._setFact('rowWords', 'wordsLabel', 'wordsValue', ui.words || '字数', novel.wordCount || '');
-    this._setFact('rowPlatform', 'platformLabel', 'platformValue', ui.platform || '上架平台', novel.platform || '');
-    this._slot('stamp').textContent = ui.studio || '图南工作室';
-
     this.closeButton.setAttribute('aria-label', ui.close || '合上书本');
     return true;
   }
@@ -190,20 +171,38 @@ class BookSpread {
 
   open(index, source) {
     this._ensure();
+    window.cancelAnimationFrame(this._openRaf);
+    this._openRaf = 0;
     window.clearTimeout(this._timer);
     window.clearTimeout(this._settleTimer);
-
-    if (!this._fill(index)) return;
+    window.clearTimeout(this._animTimer);
+    window.clearTimeout(this._releaseTimer);
+    this._releaseTimer = null;
+    this._release = null;
 
     const mode = this._mode();
     const reduced = this._reduced();
-    const rect = mode === 'spread' && !reduced ? this._sourceRect(source) : null;
+    const animated = mode === 'spread' && !reduced;
 
-    this._setFrameIdentity();
+    // 锁滚动会给 body 补一段滚动条宽度，居中内容随之左移半个滚动条。
+    // 先量出这个偏移，FLIP 起点做补偿，避免开合瞬间出现横向错位。
+    this._shiftX = this._scrollbarGap() / 2;
+
+    // 读：把几何测量集中在这里，且全部早于任何写操作。
+    // 读写交错会逼浏览器做同步强制回流，那几毫秒正是「点击后卡一下」的来源。
+    const rect = animated ? this._sourceRect(source) : null;
+    const box = animated ? this._frameBox() : null;
+
+    if (!this._fill(index)) return;
+
+    // 写：状态一次性提交，浏览器只需做一次布局
+    this._resetFrame();
     this.el.removeAttribute('data-ending');
     this.el.setAttribute('data-mode', mode);
     this.el.setAttribute('data-mounted', 'true');
     this.el.setAttribute('aria-hidden', 'false');
+    // 先提层再启动过渡，避开首帧「先绘制、再提层」造成的一掉两帧
+    this.el.setAttribute('data-animating', 'true');
 
     this.isOpen = true;
     this.openIndex = index;
@@ -212,14 +211,31 @@ class BookSpread {
     this._lockScroll(true);
     this._markCard(true);
 
-    if (rect) this._flyTo(rect);
+    // FLIP 起点：先无过渡地落到卡面书本的位置与尺寸
+    if (box) {
+      this.frame.style.transition = 'none';
+      this.frame.style.transform = this._flipTransform(rect, box);
+    }
 
-    // 后台标签页里 rAF 会被节流，用定时器兜底保证开合状态一定落地
-    window.setTimeout(() => {
+    // 起点已被浏览器提交，下一帧再释放到终态即可，
+    // 不需要再手动 void offsetWidth 强制回流一次
+    this._release = () => {
+      this._release = null;
+      window.clearTimeout(this._releaseTimer);
+      this._releaseTimer = null;
       if (!this.isOpen) return;
+      this.frame.style.transition = '';
+      this.frame.style.transform = '';
       this.el.setAttribute('data-open', 'true');
       this.closeButton.focus({ preventScroll: true });
-    }, 20);
+      this._armAnimating();
+    };
+
+    this._openRaf = window.requestAnimationFrame(this._release);
+    // 后台标签页里 rAF 会被节流，用定时器兜底保证开合状态一定落地
+    this._releaseTimer = window.setTimeout(() => {
+      if (this._release) this._release();
+    }, 120);
 
     window.addEventListener('keydown', this._onKeydown, true);
   }
@@ -227,15 +243,30 @@ class BookSpread {
   close() {
     if (!this.isOpen || !this.el) return;
 
-    this.isOpen = false;
-    this.el.setAttribute('data-open', 'false');
-    this.el.setAttribute('data-ending', 'true');
-    window.removeEventListener('keydown', this._onKeydown, true);
-    this._markCard(false);
+    // 动画还没开始就被打断：直接落终态，避免在半路留下一帧残影
+    if (this._release) {
+      window.clearTimeout(this._releaseTimer);
+      this._releaseTimer = null;
+      window.cancelAnimationFrame(this._openRaf);
+      this._openRaf = 0;
+      this._release = null;
+      this.isOpen = false;
+      this._settle();
+      return;
+    }
 
+    // 读：几何测量早于所有状态写入，避免合上动画第一帧被同步回流打断
     const mode = this.el.getAttribute('data-mode');
     const useFly = mode === 'spread' && !this._reduced();
     const rect = useFly ? this._sourceRect(this._source) : null;
+
+    // 写：状态一次性提交
+    this.isOpen = false;
+    this.el.setAttribute('data-open', 'false');
+    this.el.setAttribute('data-ending', 'true');
+    this.el.setAttribute('data-animating', 'true');
+    window.removeEventListener('keydown', this._onKeydown, true);
+    this._markCard(false);
 
     window.clearTimeout(this._timer);
     this._timer = window.setTimeout(() => {
@@ -249,11 +280,21 @@ class BookSpread {
     }, this._reduced() ? 0 : DURATION.endLeaf);
   }
 
+  _armAnimating() {
+    window.clearTimeout(this._animTimer);
+    this._animTimer = window.setTimeout(() => {
+      if (!this.isOpen) return;
+      this.el.removeAttribute('data-animating');
+    }, DURATION.settle);
+  }
+
   _settle() {
     if (this.isOpen) return;
+    window.clearTimeout(this._animTimer);
+    this.el.removeAttribute('data-animating');
     this.el.setAttribute('data-mounted', 'false');
     this.el.setAttribute('aria-hidden', 'true');
-    this._setFrameIdentity();
+    this._resetFrame();
     this.openIndex = null;
     this._lockScroll(false);
     this._blockBackground(false);
@@ -275,41 +316,42 @@ class BookSpread {
     return rect.height > 0 && rect.width > 0 ? rect : null;
   }
 
-  _setFrameIdentity() {
+  // 清掉内联样式，回到 CSS 描述的终态。
+  // 这里刻意不做强制回流：起点由「hidden -> mounted」的那一次布局自然提交。
+  _resetFrame() {
     if (!this.frame) return;
-    this.frame.style.transition = 'none';
-    this.frame.style.transform = 'none';
-    void this.frame.offsetWidth;
     this.frame.style.transition = '';
     this.frame.style.transform = '';
   }
 
-  // FLIP：以「闭合状态 = 右半页」对齐卡面书本的位置与尺寸
-  _flyTo(rect, duration) {
-    this.frame.style.transition = 'none';
-    this.frame.style.transform = 'none';
+  _frameBox() {
+    if (!this.frame) return null;
     const box = this.frame.getBoundingClientRect();
-    if (box.height <= 0 || box.width <= 0) {
-      this.frame.style.transition = '';
-      this.frame.style.transform = '';
-      return;
-    }
+    return box.height > 0 && box.width > 0 ? box : null;
+  }
 
+  _scrollbarGap() {
+    return Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+  }
+
+  // FLIP：以「闭合状态 = 右半页」对齐卡面书本的位置与尺寸
+  _flipTransform(rect, box) {
     const scale = rect.height / box.height;
-    const dx = rect.left - box.left - scale * (box.width / 2);
+    const dx = (rect.left - this._shiftX) - box.left - scale * (box.width / 2);
     const dy = rect.top - box.top;
-    const target = `translate3d(${dx}px, ${dy}px, 0) scale(${scale})`;
+    return `translate3d(${dx}px, ${dy}px, 0) scale(${scale})`;
+  }
 
-    if (duration) {
-      this.frame.style.transition = `transform ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-      this.frame.style.transform = target;
+  // 合上时直接写终态：起点已是当前已提交的值，浏览器会自己补一段过渡
+  _flyTo(rect, duration) {
+    if (!this.frame) return;
+    const box = this._frameBox();
+    if (!box) {
+      this._resetFrame();
       return;
     }
-
-    this.frame.style.transform = target;
-    void this.frame.offsetWidth;
-    this.frame.style.transition = '';
-    this.frame.style.transform = '';
+    this.frame.style.transition = `transform ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+    this.frame.style.transform = this._flipTransform(rect, box);
   }
 
   _markCard(open) {
@@ -327,7 +369,7 @@ class BookSpread {
 
   _lockScroll(locked) {
     if (locked) {
-      const gap = window.innerWidth - document.documentElement.clientWidth;
+      const gap = this._scrollbarGap();
       if (gap > 0) document.body.style.paddingRight = `${gap}px`;
       document.body.classList.add('has-book-spread');
       return;

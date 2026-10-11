@@ -895,7 +895,6 @@ class App {
       return `
         <article class="product-card" data-animate data-has-hover="${hasHoverImage}">
           <div class="product-image">
-            <span class="product-image-overlay">已上线</span>
             ${imageLink}
           </div>
           <div class="product-info">

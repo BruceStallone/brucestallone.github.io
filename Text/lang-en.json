@@ -134,6 +134,18 @@
     "novels": {
       "title": "Novels",
       "subtitle": "Published Novels",
+      "ui": {
+        "series": "Published novel",
+        "open": "Open the book",
+        "hint": "Open",
+        "openAria": "Open {title}",
+        "close": "Close the book",
+        "read": "Read now",
+        "author": "Author",
+        "words": "Length",
+        "platform": "Available on",
+        "studio": "TunanStudio"
+      },
       "items": [
         {
           "id": "1",
@@ -142,8 +154,14 @@
           "cover": "img/novels/novel-1.jpg",
           "description": "Ziqing Xu, a young girl from Spring City. Her father mysteriously disappeared soon after. During a strange turn of events, she suddenly gains the ability to see into the supernatural realm—the so-called \"Yin Yan.\" Will she be able to uncover the truth?",
           "genre": "Mystery",
-          "wordCount": "Available on WeRead",
-          "status": "800K words",
+          "tags": [
+            "Mystery",
+            "WeRead",
+            "800K words"
+          ],
+          "wordCount": "800K words",
+          "platform": "WeRead",
+          "status": "Published",
           "link": "https://weread.qq.com/web/reader/cee32f50813aba6d5g016697"
         }
       ]

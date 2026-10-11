@@ -1367,13 +1367,6 @@ ul, ol {
   gap: var(--spacing-md);
 }
 
-.product-index {
-  font-family: var(--font-en);
-  font-size: 11px;
-  color: var(--color-text-mute);
-  letter-spacing: var(--tracking-wider);
-}
-
 .product-title {
   font-family: var(--font-display);
   font-size: var(--font-size-2xl);
@@ -2046,8 +2039,9 @@ body.mobile-menu-open .scroll-indicator {
 }
 
 /* ============================================
-   小说作品区 - 3D 书立效果
+   小说作品区 - 书目卡 + 翻书交互
    ============================================ */
+
 .novels-page {
   background: linear-gradient(180deg, var(--color-ink) 0%, var(--color-ink-2) 100%);
   padding-top: var(--spacing-4xl);
@@ -2057,513 +2051,714 @@ body.mobile-menu-open .scroll-indicator {
 
 .novels-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 320px));
-  gap: var(--spacing-2xl);
-  margin-top: var(--spacing-xl);
+  grid-template-columns: repeat(auto-fit, minmax(min(232px, 100%), 252px));
+  gap: clamp(2rem, 5vw, 3.25rem) clamp(1.5rem, 4vw, 3rem);
   justify-content: center;
+  align-items: start;
+  max-width: 920px;
+  margin: var(--spacing-2xl) auto 0;
 }
 
-@media (max-width: 768px) {
-  .novels-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-2xl);
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
+/* --- 书本本体：不排文字、不加外框 --- */
 .book-card {
+  --book-w: clamp(168px, 17vw, 224px);
+  --book-h: calc(var(--book-w) * 1.5);
+  --book-depth: clamp(14px, 1.7vw, 22px);
+  --book-tilt: -12deg;
+  position: relative;
   display: flex;
-  flex-direction: column;
-  background: transparent;
+  justify-content: center;
+  padding: 4px 0 30px;
+  background: none;
   border: none;
-  border-radius: 0;
-  overflow: visible;
-  box-shadow: none;
-  transition: transform var(--transition-normal);
   opacity: 0;
-  transform: translateY(30px);
-  width: 100%;
-  max-width: 320px;
-  margin: 0 auto;
-  perspective: 1000px;
-  align-items: center;
+  transform: translateY(24px);
 }
 
 .book-card.animate-in {
-  animation: fadeInUp 0.8s ease forwards;
+  animation: fadeInUp 0.75s ease forwards;
 }
 
-@media (max-width: 768px) {
-  .book-card:hover {
-    transform: none;
-  }
-}
-
-.book-wrapper {
-  position: relative;
-  width: 220px;
-  height: 330px;
-  transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  margin: 0 auto var(--spacing-lg);
-}
-
-.book-card:hover .book-wrapper {
-  transform: rotateY(-22deg) translateY(-8px);
-}
-
-@media (max-width: 768px) {
-  .book-wrapper {
-    width: 200px;
-    height: 300px;
-  }
-
-  .book-card:hover .book-wrapper {
-    transform: none;
-  }
-}
-
-.book-spine {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 28px;
-  height: 100%;
-  background: linear-gradient(90deg, #3A2A1E 0%, #5C4632 50%, #3A2A1E 100%);
-  transform: rotateY(90deg) translateX(-14px);
-  transform-origin: left center;
-  border-radius: 2px 0 0 2px;
-  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.4);
-}
-
-.book-spine::before {
+.book-card::after {
   content: '';
   position: absolute;
-  top: 12px;
-  bottom: 12px;
-  left: 8px;
-  width: 1px;
-  background: rgba(232, 227, 214, 0.18);
+  left: 50%;
+  bottom: 8px;
+  width: calc(var(--book-w) * 0.92);
+  height: 16px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 72%);
+  transition: opacity var(--transition-slow), transform var(--transition-slow);
+  pointer-events: none;
 }
 
-@media (max-width: 768px) {
-  .book-spine {
-    display: none;
+@media (hover: hover) and (pointer: fine) {
+  .book-card:hover .book,
+  .book-card:focus-within .book {
+    transform: rotateY(calc(var(--book-tilt) - 10deg)) translate3d(0, -7px, 0);
+  }
+
+  .book-card:hover::after,
+  .book-card:focus-within::after {
+    opacity: 0.45;
+    transform: translateX(-50%) scale(1.08);
+  }
+
+  .book-card:hover .book__image,
+  .book-card:focus-within .book__image {
+    transform: scale(1.05);
+    filter: saturate(1.02) contrast(1.04);
   }
 }
 
-.book-front {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+.book-card[data-book-open="true"] .book-stage {
+  opacity: 0.15;
+}
+
+.book-stage {
+  perspective: 1000px;
+  perspective-origin: 26% 50%;
+  transition: opacity var(--transition-normal);
+}
+
+.book {
+  position: relative;
+  display: block;
+  width: var(--book-w);
+  height: var(--book-h);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
   transform-style: preserve-3d;
-  border-radius: 0 3px 3px 0;
-  overflow: hidden;
+  transform: rotateY(var(--book-tilt));
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-tap-highlight-color: transparent;
 }
 
-.book-cover {
+.book:focus-visible {
+  outline: none;
+}
+
+.book:focus-visible .book__cover {
+  box-shadow:
+    inset 0 0 0 2px var(--color-gold),
+    0 0 0 4px rgba(201, 168, 106, 0.3);
+}
+
+.book__block {
+  position: absolute;
+  inset: 2px 0 2px 3px;
+  transform: translate3d(var(--book-depth), 0, calc(var(--book-depth) * -1));
+  background:
+    repeating-linear-gradient(90deg, #E4DFD0 0 1px, #C6BFAC 1px 2px),
+    linear-gradient(180deg, #DCD6C6, #BFB8A5);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+}
+
+.book__spine {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: var(--book-depth);
   height: 100%;
-  background: linear-gradient(135deg, #1F1B17 0%, #2C241D 50%, #1F1B17 100%);
-  border-radius: 0 3px 3px 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: var(--spacing-lg);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    0 8px 25px rgba(0, 0, 0, 0.4),
-    inset 0 0 30px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  border: 1px solid rgba(201, 168, 106, 0.15);
+  transform-origin: left center;
+  transform: rotateY(90deg);
+  background: linear-gradient(90deg, #2A1F16 0%, #503D29 48%, #241A12 100%);
+  border-radius: 2px 0 0 2px;
 }
 
-.book-cover-image {
+.book__spine::after {
+  content: '';
+  position: absolute;
+  top: 14%;
+  bottom: 14%;
+  left: 45%;
+  width: 1px;
+  background: rgba(201, 168, 106, 0.35);
+}
+
+.book__cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 1px var(--radius-sm) var(--radius-sm) 1px;
+  background: linear-gradient(135deg, #221D18 0%, #2E251E 52%, #1B1713 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 168, 106, 0.16),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  isolation: isolate;
+  transition: box-shadow var(--transition-fast);
+}
+
+.book__cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.04) 12%, transparent 40%),
+    linear-gradient(180deg, rgba(14, 14, 16, 0.18) 0%, transparent 45%, rgba(14, 14, 16, 0.72) 100%);
+  pointer-events: none;
+}
+
+.book__image {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  z-index: 1;
-  filter: saturate(0.85) contrast(1.05);
+  filter: saturate(0.9) contrast(1.04);
   transition: transform var(--transition-slow), filter var(--transition-normal);
 }
-
-.book-card:hover .book-cover-image {
-  transform: scale(1.04);
-  filter: saturate(1) contrast(1.05);
+/* ============================================
+   翻开的书 - 全屏书页浮层
+   ============================================ */
+.book-spread {
+  --spread-tilt: -12deg;
+  --z-book: 600;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-book);
+  display: grid;
+  place-items: center;
+  visibility: hidden;
+  pointer-events: none;
 }
 
-.book-cover::before {
-  content: '';
+.book-spread[data-mounted="true"] {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.book-spread__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 6, 9, 0.82);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  opacity: 0;
+  border: none;
+  cursor: pointer;
+  transition: opacity 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.book-spread[data-open="true"] .book-spread__scrim {
+  opacity: 1;
+}
+
+.book-spread__frame {
+  position: relative;
+  width: min(1000px, 88vw, 123vh);
+  aspect-ratio: 4 / 3;
+  transform-origin: 0 0;
+  transition: transform 380ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+
+.book-spread__book {
+  position: absolute;
+  inset: 0;
+  perspective: 2200px;
+  perspective-origin: 50% 45%;
+  transform-style: preserve-3d;
+}
+
+/* 摊开后落在左半页的前封面（绕书脊旋转） */
+.book-leaf {
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transform: rotateY(var(--spread-tilt));
+  transition: transform 520ms cubic-bezier(0.16, 0.84, 0.24, 1) 100ms;
+}
+
+.book-spread[data-open="true"] .book-leaf {
+  transform: rotateY(-178deg);
+}
+
+.book-leaf__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.85);
+}
+
+.book-leaf__face--front {
+  border-radius: 2px 5px 5px 2px;
+  background: linear-gradient(135deg, #221D18 0%, #2E251E 52%, #1B1713 100%);
+}
+
+.book-leaf__face--front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   background:
-    linear-gradient(90deg, rgba(0,0,0,0.18) 0%, transparent 4%, transparent 96%, rgba(0,0,0,0.18) 100%),
-    linear-gradient(180deg, rgba(14, 14, 16, 0.35) 0%, rgba(14, 14, 16, 0.1) 40%, rgba(14, 14, 16, 0.55) 100%);
+    linear-gradient(90deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.05) 14%, transparent 42%),
+    linear-gradient(180deg, rgba(14, 14, 16, 0.15) 0%, transparent 45%, rgba(14, 14, 16, 0.7) 100%);
   pointer-events: none;
-  z-index: 2;
 }
 
-.book-cover-2 {
-  background: linear-gradient(135deg, #2D1A14 0%, #3D2418 50%, #2D1A14 100%);
+.book-leaf__face--back {
+  transform: rotateY(180deg);
+  border-radius: 5px 2px 2px 5px;
+  background: linear-gradient(120deg, #E9E3D3 0%, #D9D2BE 100%);
 }
 
-.book-cover-content {
+.book-leaf__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.book-leaf__colophon {
   position: relative;
-  z-index: 3;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
-  flex: 1;
+  gap: 6px;
+  height: 100%;
+  padding: clamp(1rem, 3.4vw, 2.5rem);
+  color: var(--color-ink);
 }
 
-.book-genre {
-  display: inline-block;
-  padding: 4px 10px;
-  background: rgba(201, 168, 106, 0.1);
-  color: var(--color-gold);
+.book-leaf__colophon-title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.4vw, 1.6rem);
+  letter-spacing: 0.06em;
+  color: #2A2018;
+}
+
+.book-leaf__colophon-line {
+  width: 34px;
+  height: 1px;
+  margin: 6px 0 10px;
+  background: rgba(42, 32, 24, 0.4);
+}
+
+.book-leaf__facts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.book-leaf__fact {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: clamp(0.7rem, 1.3vw, 0.84rem);
+  line-height: 1.7;
+}
+
+.book-leaf__fact dt {
+  color: rgba(30, 26, 22, 0.6);
+  letter-spacing: var(--tracking-wide);
+}
+
+.book-leaf__fact dd {
+  margin: 0;
+  text-align: right;
+  color: rgba(30, 26, 22, 0.86);
+}
+
+.book-leaf__stamp {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 5px 10px;
+  font-size: clamp(0.62rem, 1.1vw, 0.75rem);
+  letter-spacing: var(--tracking-wider);
+  color: #F3EDE2;
+  background: var(--color-accent);
+  border-radius: var(--radius-xs);
+}
+
+/* 书页 */
+.book-page {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, #F4F0E4 0%, #EAE4D4 62%, #E2DAC7 100%);
+  color: var(--color-ink);
+}
+
+.book-page--left {
+  left: 0;
+  border-radius: 5px 0 0 5px;
+  box-shadow: inset -26px 0 34px -30px rgba(43, 32, 22, 0.55);
+}
+
+.book-page--right {
+  left: 50%;
+  border-radius: 0 5px 5px 0;
+  box-shadow:
+    inset 26px 0 34px -30px rgba(43, 32, 22, 0.6),
+    0 30px 70px -34px rgba(0, 0, 0, 0.85);
+}
+
+.book-spread__gutter {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 4;
+  width: 54px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(43, 32, 22, 0.16) 42%,
+      rgba(43, 32, 22, 0.28) 50%,
+      rgba(43, 32, 22, 0.16) 58%,
+      transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease 260ms;
+}
+
+.book-spread[data-open="true"] .book-spread__gutter {
+  opacity: 1;
+}
+
+/* 右页正文：简介 + 标签 + 跳转按钮 */
+.book-page__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: clamp(1.1rem, 3.6vw, 2.75rem) clamp(1.1rem, 3.8vw, 3rem);
+  opacity: 0;
+  transform: translate3d(-8px, 6px, 0);
+  transition: opacity 340ms ease 300ms, transform 420ms cubic-bezier(0.22, 1, 0.36, 1) 300ms;
+}
+
+.book-spread[data-open="true"] .book-page--right .book-page__inner {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.book-page__index {
   font-family: var(--font-en);
   font-size: 10px;
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
-  border: 1px solid rgba(201, 168, 106, 0.25);
-  width: fit-content;
+  color: rgba(42, 32, 24, 0.62);
 }
 
-.book-title {
+.book-page__title {
+  margin-top: 10px;
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: clamp(1.5rem, 4.2vw, 2.6rem);
   font-weight: var(--font-weight-medium);
-  color: var(--color-paper);
-  line-height: 1.25;
-  margin: var(--spacing-sm) 0 0;
+  line-height: var(--line-height-tight);
   letter-spacing: 0.05em;
+  color: #241C14;
 }
 
-.book-author {
-  font-size: var(--font-size-xs);
-  color: rgba(232, 227, 214, 0.6);
+.book-page__byline {
+  margin-top: 8px;
+  font-size: clamp(0.72rem, 1.4vw, 0.85rem);
   letter-spacing: var(--tracking-wide);
-  margin-top: auto;
+  color: rgba(42, 32, 24, 0.66);
 }
 
-.book-decoration {
-  position: absolute;
-  bottom: var(--spacing-lg);
-  right: var(--spacing-lg);
-  width: 60px;
-  height: 60px;
-  opacity: 0.18;
-  z-index: 3;
-}
-
-.book-decoration-line {
-  position: absolute;
-  top: 50%;
-  left: 0;
+.book-page__rule {
   width: 100%;
   height: 1px;
-  background: var(--color-gold);
-  transform: rotate(-45deg);
+  margin: clamp(0.8rem, 2vw, 1.35rem) 0;
+  background: linear-gradient(90deg, var(--color-accent) 0 34px, rgba(42, 32, 24, 0.18) 34px 100%);
 }
 
-.book-decoration-circle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--color-gold);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.book-pages {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 95%;
-  height: calc(100% - 5px);
-  transform: translateZ(-5px);
-  transform-origin: bottom right;
-}
-
-.book-page {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to right, #DDD8C9 0%, #C9C2B0 100%);
-  border-radius: 0 2px 2px 0;
-  transform-origin: bottom right;
-}
-
-.book-page::before {
-  content: '';
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.06);
-  box-shadow: 0 15px 0 rgba(0, 0, 0, 0.06), 0 30px 0 rgba(0, 0, 0, 0.06);
-}
-
-.book-page-1 {
-  transform: translateZ(-2px);
-  opacity: 0.92;
-}
-
-.book-page-2 {
-  transform: translateZ(-4px);
-  opacity: 0.82;
-}
-
-.book-page-3 {
-  transform: translateZ(-6px);
-  opacity: 0.72;
-}
-
-/* ============================================
-   小说作品 - 书的背面信息块
-   ============================================ */
-.book-back {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #F5F1E6 0%, #E8E1CD 100%);
-  border-radius: 3px;
-  transform: rotateY(180deg) translateZ(0);
-  backface-visibility: hidden;
-  padding: var(--spacing-lg);
-  box-shadow:
-    inset 0 0 20px rgba(0, 0, 0, 0.06),
-    0 4px 12px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: var(--color-ink);
-}
-
-.book-back::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 14px,
-      rgba(0, 0, 0, 0.04) 14px,
-      rgba(0, 0, 0, 0.04) 15px
-    );
-  pointer-events: none;
-  border-radius: 3px;
-}
-
-.book-back-content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  text-align: left;
-  height: 100%;
-}
-
-.book-back-title {
-  font-family: var(--font-display);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-ink);
-  letter-spacing: 0.04em;
-  margin-bottom: var(--spacing-xs);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.book-back-description {
-  font-size: 0.95rem;
-  color: rgba(14, 14, 16, 0.78);
-  line-height: 1.85;
+.book-page__body {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding-right: 2px;
-  word-break: break-word;
-  text-align: left;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(42, 32, 24, 0.28) transparent;
+}
+
+.book-page__desc {
+  font-size: clamp(0.82rem, 1.6vw, 1rem);
+  line-height: 1.95;
+  color: rgba(30, 25, 20, 0.86);
+  letter-spacing: 0.02em;
   white-space: pre-line;
 }
 
-.book-back-meta {
+.book-page__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  margin-top: var(--spacing-xs);
+  gap: 8px;
+  margin: clamp(0.9rem, 2.2vw, 1.5rem) 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.book-word-count,
-.book-status {
-  padding: 2px 8px;
-  font-family: var(--font-en);
-  font-size: 10px;
-  font-weight: var(--font-weight-medium);
+.book-page__tag {
+  padding: 4px 11px;
+  font-size: clamp(0.66rem, 1.2vw, 0.78rem);
   letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: var(--color-ink);
-  background: rgba(14, 14, 16, 0.08);
-  border: 1px solid rgba(14, 14, 16, 0.15);
+  color: #4A3524;
+  background: rgba(201, 168, 106, 0.16);
+  border: 1px solid rgba(150, 116, 58, 0.42);
   border-radius: var(--radius-xs);
 }
 
-.book-status {
-  color: var(--color-success);
-  background: rgba(111, 158, 111, 0.12);
-  border-color: rgba(111, 158, 111, 0.3);
+.book-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(1rem, 2.6vw, 1.75rem);
 }
 
-.book-back-link {
+.book-page__cta {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: var(--spacing-sm);
-  padding: 6px 12px;
-  font-family: var(--font-en);
-  font-size: 11px;
-  font-weight: var(--font-weight-medium);
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: clamp(0.74rem, 1.4vw, 0.85rem);
   letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-paper);
-  background: var(--color-ink);
-  border: 1px solid var(--color-ink);
+  color: #F6F2E9;
+  background: #2A2018;
   border-radius: var(--radius-xs);
+  min-height: 44px;
   text-decoration: none;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition: background var(--transition-fast), transform var(--transition-fast);
 }
 
-.book-back-link:hover,
-.book-back-link:focus {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--color-paper);
-}
-
-.book-back-link svg {
-  width: 12px;
-  height: 12px;
+.book-page__cta svg {
+  width: 14px;
+  height: 14px;
   transition: transform var(--transition-fast);
 }
 
-.book-back-link:hover svg {
-  transform: translateX(2px);
+.book-page__cta:hover,
+.book-page__cta:focus-visible {
+  background: var(--color-accent);
+  transform: translateY(-1px);
 }
 
-/* 桌面端：hover 翻页效果 */
-@media (min-width: 769px) {
-  .book-card:hover .book-wrapper {
-    transform: rotateY(-180deg) translateY(-8px);
-  }
+.book-page__cta:hover svg,
+.book-page__cta:focus-visible svg {
+  transform: translateX(3px);
 }
 
-.book-info-mobile {
-  display: none;
+.book-page__note {
+  font-size: var(--font-size-xs);
+  color: rgba(42, 32, 24, 0.55);
 }
 
-.book-link-mobile {
-  display: inline-block;
-  margin-top: var(--spacing-md);
-  padding: 8px 14px;
-  font-family: var(--font-en);
-  font-size: 11px;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+/* 关闭按钮 */
+.book-spread__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(20, 18, 16, 0.9);
+  border: 1px solid rgba(201, 168, 106, 0.4);
+  border-radius: var(--radius-full);
   color: var(--color-paper);
-  background: transparent;
-  border: 1px solid var(--color-line);
-  text-decoration: none;
-  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal), background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
 }
 
-.book-link-mobile:hover,
-.book-link-mobile:focus {
+.book-spread[data-open="true"] .book-spread__close {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.book-spread__close svg {
+  width: 17px;
+  height: 17px;
+}
+
+.book-spread__close:hover,
+.book-spread__close:focus-visible {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: var(--color-paper);
+  transform: rotate(90deg);
 }
 
-@media (max-width: 768px) {
-  .book-info-mobile {
-    display: block;
-    background: var(--color-ink-2);
-    border: 1px solid var(--color-line);
-    padding: var(--spacing-lg);
-    margin-top: var(--spacing-md);
-    width: 100%;
-    max-width: 300px;
+.book-spread[data-ending="true"] .book-leaf,
+.book-spread[data-ending="true"] .book-page__inner,
+.book-spread[data-ending="true"] .book-spread__gutter {
+  transition-duration: 260ms;
+  transition-delay: 0ms;
+}
+
+.book-spread[data-ending="true"] .book-spread__scrim {
+  transition-duration: 220ms;
+}
+
+/* 矮屏（横屏手机）下压缩书页留白，优先保证正文可读 */
+@media (max-height: 540px) and (min-width: 761px) {
+  .book-page__inner {
+    padding: clamp(0.7rem, 2vh, 1.1rem) clamp(0.9rem, 2.4vw, 1.6rem);
   }
 
-  .book-title-mobile {
-    font-family: var(--font-display);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-paper);
-    margin-bottom: var(--spacing-xs);
-    letter-spacing: 0.02em;
+  .book-page__rule,
+  .book-page__note {
+    display: none;
   }
 
-  .book-author-mobile {
-    font-family: var(--font-en);
-    font-size: 11px;
-    color: var(--color-accent);
-    letter-spacing: var(--tracking-wider);
-    text-transform: uppercase;
-    margin-bottom: var(--spacing-md);
+  .book-page__actions {
+    margin-top: 0.6rem;
+  }
+}
+
+body.has-book-spread {
+  overflow: hidden;
+}
+
+/* --- 窄屏：单页书页卡片居中浮起 --- */
+@media (max-width: 760px) {
+  .book-spread {
+    place-items: center;
+    padding: clamp(0.75rem, 3vw, 1.5rem);
   }
 
-  .book-description-mobile {
-    font-size: 1rem;
-    color: var(--color-text);
-    line-height: 1.85;
-    margin-bottom: var(--spacing-md);
-    white-space: pre-line;
+  .book-spread__frame {
+    width: min(100%, 460px);
+    aspect-ratio: auto;
+    max-height: 86vh;
+    border-radius: var(--radius-md);
+    transform-origin: center;
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.985);
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 260ms ease;
   }
 
-  .book-tags-mobile {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+  .book-spread[data-open="true"] .book-spread__frame {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
   }
 
-  .book-tag {
-    padding: 3px 8px;
-    font-family: var(--font-en);
-    font-size: 10px;
-    font-weight: var(--font-weight-medium);
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
-    color: var(--color-text-soft);
-    background: transparent;
-    border: 1px solid var(--color-line);
-    border-radius: var(--radius-xs);
+  .book-spread[data-open="false"] .book-spread__frame {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.985);
+    transition-duration: 300ms, 220ms;
+  }
+
+  .book-spread__book {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: var(--spacing-md);
+    max-height: 86vh;
+    padding: 3.5rem clamp(1rem, 4.5vw, 1.5rem) clamp(1rem, 4.5vw, 1.5rem);
+    perspective: none;
+    background: linear-gradient(120deg, #F4F0E4 0%, #E9E3D3 100%);
+    border-radius: var(--radius-md);
+    box-shadow: 0 22px 54px -22px rgba(0, 0, 0, 0.7);
+  }
+
+  .book-page--left,
+  .book-spread__gutter {
+    display: none;
+  }
+
+  .book-leaf {
+    order: -1;
+    align-self: start;
+    position: relative;
+    top: auto;
+    left: auto;
+    width: clamp(72px, 20vw, 96px);
+    height: auto;
+    aspect-ratio: 2 / 3;
+    transform: none;
+    transition: none;
+  }
+
+  .book-spread[data-open="true"] .book-leaf {
+    transform: none;
+  }
+
+  .book-leaf__face--back,
+  .book-leaf__stamp {
+    display: none;
+  }
+
+  .book-spread__close {
+    top: 8px;
+    right: 10px;
+  }
+
+  .book-leaf__face {
+    position: absolute;
+    box-shadow: 0 14px 26px -14px rgba(0, 0, 0, 0.6);
+  }
+
+  .book-page--right {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    box-shadow: none;
+  }
+
+  .book-page__inner {
+    padding: 0;
+    max-height: 68vh;
+    transform: none;
+    transition: opacity 240ms ease 140ms;
+  }
+
+  .book-page__body {
+    max-height: 42vh;
+  }
+}
+
+@media (max-width: 380px) {
+  .book-spread__book {
+    gap: 12px;
+  }
+
+  .book-leaf {
+    width: 60px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book,
+  .book-card,
+  .book-stage,
+  .book__image,
+  .book-leaf,
+  .book-page__inner,
+  .book-spread__frame,
+  .book-spread__scrim,
+  .book-spread__gutter {
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+    animation-duration: 1ms !important;
+  }
+
+  .book-card {
+    opacity: 1;
+    transform: none;
   }
 }
 

@@ -134,6 +134,18 @@
     "novels": {
       "title": "小说",
       "subtitle": "已出版小说",
+      "ui": {
+        "series": "已出版小说",
+        "open": "翻开书籍",
+        "hint": "翻开",
+        "openAria": "翻开《{title}》",
+        "close": "合上书本",
+        "read": "前往阅读",
+        "author": "作者",
+        "words": "字数",
+        "platform": "上架平台",
+        "studio": "图南工作室"
+      },
       "items": [
         {
           "id": "1",
@@ -142,8 +154,14 @@
           "cover": "img/novels/novel-1.jpg",
           "description": "花城少女徐梓卿意外被绑入殡仪馆，侥幸得救后父亲又离奇失踪，在一次奇遇中徐梓卿偶然获得了「开阴眼」的能力，她是否能找出父亲失踪的真相，以及揭开过去沉重的涟漪？",
           "genre": "都市异闻",
-          "wordCount": "已上架【微信读书】",
-          "status": "7.8万字",
+          "tags": [
+            "都市异闻",
+            "微信读书",
+            "7.8万字"
+          ],
+          "wordCount": "7.8万字",
+          "platform": "微信读书",
+          "status": "已上架",
           "link": "https://weread.qq.com/web/reader/cee32f50813aba6d5g016697"
         }
       ]

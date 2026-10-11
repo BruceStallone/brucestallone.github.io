@@ -3,6 +3,16 @@ import './router.js';
 import './animation.js';
 import './floating-images.js';
 import './hero-video.js';
+import './book-spread.js';
+
+function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 class App {
   constructor() {
@@ -10,6 +20,7 @@ class App {
     this._navBound = false;
     this._menuController = null;
     this._routeHookAdded = false;
+    this._bookBound = false;
   }
 
   async init() {
@@ -349,6 +360,9 @@ class App {
     window.i18n.on(window.I18nEventType.LANGUAGE_SWITCHED, () => {
       this.updateLanguageButtons();
       this.refreshCurrentPageContent();
+      if (window.bookSpread) {
+        window.bookSpread.refresh();
+      }
       setTimeout(() => {
         window.dissolveAnimationManager.reinitialize();
       }, 100);
@@ -439,6 +453,12 @@ class App {
           pageHeader.querySelector('.page-subtitle').textContent = window.i18n.get('products.subtitle');
         }
         productsGrid.innerHTML = this.generateProductCards();
+      }
+      const novelsGrid = document.querySelector('.novels-grid');
+      if (novelsGrid) {
+        novelsGrid.innerHTML = this.generateNovelCards();
+      }
+      if (productsGrid || novelsGrid) {
         window.heroAnimations.init();
         window.lazyImageLoader.init();
       }
@@ -701,6 +721,9 @@ class App {
   }
 
   beforeRouteChange(path) {
+    if (window.bookSpread && window.bookSpread.isOpen) {
+      window.bookSpread.close();
+    }
     const content = document.getElementById('main-content');
     if (content) {
       content.classList.add('page-transition-out');
@@ -851,7 +874,6 @@ class App {
     const sortedProducts = [...products].sort((a, b) => parseInt(b.id) - parseInt(a.id));
     const productCards = sortedProducts.map((product, index) => {
       const hasHoverImage = product.hasHoverImage !== false;
-      const productIndex = `NO. 0${index + 1} · ${new Date().getFullYear() - (sortedProducts.length - 1 - index)}`;
       const imageContent = hasHoverImage ? `
         <picture>
           <source srcset="img/hero/product-${product.id}@3x.webp 3x, img/hero/product-${product.id}@2x.webp 2x, img/hero/product-${product.id}.webp" type="image/webp">
@@ -877,7 +899,6 @@ class App {
             ${imageLink}
           </div>
           <div class="product-info">
-            <span class="product-index">${productIndex}</span>
             <h3 class="product-title">${product.title}</h3>
             <p class="product-description">${product.description}</p>
             <div class="product-tags">
@@ -888,67 +909,7 @@ class App {
       `;
     }).join('');
 
-    const novelCards = novels.items.map((novel, index) => {
-      const descriptionLines = (novel.description || '').split('\n');
-      const descriptionHtml = descriptionLines.map(line => `<p class="book-card-desc-line">${line}</p>`).join('');
-      const coverImage = novel.cover || `img/novels/novel-${novel.id}.jpg`;
-      const coverVariant = index % 2 === 1 ? ' book-cover-2' : '';
-      const bookTitleClass = 'book-title';
-      const bookAuthorClass = 'book-author';
-      const mobileDescription = (novel.description || '').replace(/\n/g, ' ');
-      const link = novel.link || '#';
-      return `
-        <article class="book-card" data-animate>
-          <div class="book-wrapper">
-            <div class="book-spine"></div>
-            <div class="book-front">
-              <div class="book-cover${coverVariant}">
-                <img class="book-cover-image" src="${coverImage}" alt="${novel.title} 封面" loading="lazy" onerror="this.style.display='none'">
-                <div class="book-cover-content">
-                  <div class="book-genre" data-i18n="products.novels.items.${index}.genre">${novel.genre || ''}</div>
-                  <h3 class="${bookTitleClass}" data-i18n="products.novels.items.${index}.title">${novel.title}</h3>
-                  <div class="${bookAuthorClass}" data-i18n="products.novels.items.${index}.author">${novel.author || '图南工作室'}</div>
-                </div>
-                <div class="book-decoration">
-                  <div class="book-decoration-line"></div>
-                  <div class="book-decoration-circle"></div>
-                </div>
-              </div>
-              <div class="book-pages">
-                <div class="book-page book-page-1"></div>
-                <div class="book-page book-page-2"></div>
-                <div class="book-page book-page-3"></div>
-              </div>
-            </div>
-            <div class="book-back">
-              <div class="book-back-content">
-                <div class="book-back-title" data-i18n="products.novels.items.${index}.title">${novel.title}</div>
-                <p class="book-back-description" data-i18n="products.novels.items.${index}.description">${mobileDescription}</p>
-                <div class="book-back-meta">
-                  <span class="book-word-count" data-i18n="products.novels.items.${index}.wordCount">${novel.wordCount || ''}</span>
-                  <span class="book-status" data-i18n="products.novels.items.${index}.status">${novel.status || ''}</span>
-                </div>
-                <a href="${link}" target="_blank" rel="noopener noreferrer" class="book-back-link" aria-label="阅读${novel.title}">
-                  <span>前往阅读</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="book-info-mobile">
-            <h3 class="book-title-mobile" data-i18n="products.novels.items.${index}.title">${novel.title}</h3>
-            <div class="book-author-mobile" data-i18n="products.novels.items.${index}.author">${novel.author || '图南工作室'}</div>
-            <p class="book-description-mobile" data-i18n="products.novels.items.${index}.description">${mobileDescription}</p>
-            <div class="book-tags-mobile">
-              ${novel.genre ? `<span class="book-tag" data-i18n="products.novels.items.${index}.genre">${novel.genre}</span>` : ''}
-              ${novel.wordCount ? `<span class="book-tag" data-i18n="products.novels.items.${index}.wordCount">${novel.wordCount}</span>` : ''}
-              ${novel.status ? `<span class="book-tag" data-i18n="products.novels.items.${index}.status">${novel.status}</span>` : ''}
-            </div>
-            ${novel.link ? `<a href="${novel.link}" target="_blank" rel="noopener noreferrer" class="book-link-mobile">前往阅读 →</a>` : ''}
-          </div>
-        </article>
-      `;
-    }).join('');
+    const novelCards = this.generateNovelCards();
 
     return `
       <section class="page products-page">
@@ -986,6 +947,30 @@ class App {
         </div>
       </section>
     `;
+  }
+
+  generateNovelCards() {
+    const novels = window.i18n.get('products.novels', {});
+    const items = (novels && novels.items) || [];
+    const ui = (novels && novels.ui) || {};
+
+    return items.map((novel, index) => {
+      const title = novel.title || '';
+      const aria = String(ui.openAria || '翻开《{title}》').replace('{title}', title);
+      return `
+        <article class="book-card" data-animate data-novel-index="${index}">
+          <div class="book-stage">
+            <button class="book" type="button" data-book-open aria-expanded="false" aria-controls="bookSpread" aria-label="${escapeHtml(aria)}">
+              <span class="book__block" aria-hidden="true"></span>
+              <span class="book__spine" aria-hidden="true"></span>
+              <span class="book__cover">
+                <img class="book__image" src="${escapeHtml(novel.cover || '')}" alt="${escapeHtml(title)} 封面" loading="lazy">
+              </span>
+            </button>
+          </div>
+        </article>
+      `;
+    }).join('');
   }
 
   getTeamTemplate() {
@@ -1131,6 +1116,20 @@ class App {
 
   attachProductsEvents() {
     this.initScrollIndicator();
+
+    if (this._bookBound) return;
+    this._bookBound = true;
+
+    document.addEventListener('click', (event) => {
+      const trigger = event.target.closest('[data-book-open]');
+      if (!trigger) return;
+      const card = trigger.closest('.book-card');
+      if (!card) return;
+      event.preventDefault();
+
+      const index = Number(card.dataset.novelIndex);
+      window.bookSpread.toggle(Number.isFinite(index) ? index : 0, trigger);
+    });
   }
 
   renderTools() {
